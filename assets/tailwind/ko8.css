@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/*
+ * ko8 · hoja de estilos de la interfaz que trae el framework:
+ * pagina de error, instalador, profiler, paginacion y userguide.
+ *
+ * Se compila a system/media/css/ko8.css y se versiona, para que el framework
+ * funcione en produccion sin Node ni build.
+ */
+@source "../../system/views";
+@source "../../modules/*/views";
+@source "../../public";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --color-ko8-50: oklch(0.97 0.014 254);
+  --color-ko8-100: oklch(0.93 0.032 254);
+  --color-ko8-300: oklch(0.77 0.11 254);
+  --color-ko8-500: oklch(0.62 0.19 254);
+  --color-ko8-600: oklch(0.55 0.20 254);
+  --color-ko8-700: oklch(0.47 0.18 254);
+  --color-ko8-950: oklch(0.18 0.03 254);
+}
+
+@layer base {
+  ::selection { background-color: var(--color-ko8-600); color: white; }
+}
+
+@layer components {
+  /* Debug::source(): line numbers and the highlighted line. */
+  .source { @apply overflow-x-auto p-0 font-mono text-xs leading-relaxed text-slate-300; }
+  .source .line { @apply block whitespace-pre px-4; }
+  .source .line.highlight { @apply bg-rose-500/15 ring-1 ring-inset ring-rose-500/30; }
+  .source .number { @apply inline-block w-10 select-none pr-3 text-right text-slate-600; }
+
+  /* Docs: rendered markdown lives on a light surface. */
+  .ko8-prose { @apply text-[15px] leading-relaxed text-slate-700; }
+  .ko8-prose > :first-child { @apply mt-0; }
+  .ko8-prose h1 { @apply mt-0 mb-4 border-b border-slate-200 pb-2 text-3xl font-bold tracking-tight text-slate-900; }
+  .ko8-prose h2 { @apply mt-10 mb-3 text-2xl font-semibold tracking-tight text-slate-900; }
+  .ko8-prose h3 { @apply mt-8 mb-2 text-lg font-semibold text-slate-900; }
+  .ko8-prose h4 { @apply mt-6 mb-2 text-base font-semibold text-slate-900; }
+  .ko8-prose p { @apply my-4; }
+  .ko8-prose a { @apply text-ko8-600 underline underline-offset-2 hover:text-ko8-700; }
+  .ko8-prose ul { @apply my-4 list-disc space-y-1.5 pl-6; }
+  .ko8-prose ol { @apply my-4 list-decimal space-y-1.5 pl-6; }
+  .ko8-prose code { @apply rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.875em] text-slate-800; }
+  .ko8-prose pre { @apply my-4 overflow-x-auto rounded-lg bg-slate-950 p-4 font-mono text-xs leading-relaxed text-slate-200; }
+  .ko8-prose pre code { @apply bg-transparent p-0 text-inherit; }
+  .ko8-prose blockquote { @apply my-4 border-l-4 border-ko8-300 bg-ko8-50 py-1 pl-4 text-slate-600; }
+  .ko8-prose table { @apply my-4 w-full border-collapse text-left text-sm; }
+  .ko8-prose th { @apply border-b border-slate-200 bg-slate-50 px-3 py-2 font-semibold text-slate-900; }
+  .ko8-prose td { @apply border-b border-slate-100 px-3 py-2 align-top; }
+  .ko8-prose hr { @apply my-8 border-slate-200; }
+}

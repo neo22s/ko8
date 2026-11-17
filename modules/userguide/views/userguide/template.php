@@ -1,107 +1,79 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<?php
+/**
+ * ko8 userguide · page shell.
+ *
+ * @package    Ko8/Userguide
+ * @category   Views
+ */
+?><!DOCTYPE html>
+<html lang="en" class="h-full">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-<title><?php echo $title ?> | Koseven <?php echo 'User Guide'; ?></title>
-
-<?php foreach ($styles as $style => $media) echo HTML::style($style, ['media' => $media], NULL, TRUE), "\n" ?>
-
-<?php foreach ($scripts as $script) echo HTML::script($script, NULL, NULL, TRUE), "\n" ?>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><?php echo HTML::chars($title) ?> · ko8 docs</title>
+<link rel="stylesheet" href="<?php echo Route::get('docs/media')->uri(['file' => 'css/ko8']) ?>">
 </head>
-<body>
+<body class="min-h-full bg-white text-slate-700 antialiased">
 
-	<div id="kodoc-header">
-		<div class="container">
-			<a id="kodoc-logo" href="https://koseven.ga/">koseven</a>
-			<div id="kodoc-menu">
-				<ul>
-					<li class="guide first">
-						<a href="<?php echo Route::url('docs/guide') ?>">User Guide</a>
-					</li>
-					<?php if (Kohana::$config->load('userguide.api_browser')): ?>
-					<li class="api">
-						<a href="<?php echo Route::url('docs/api') ?>">API Browser</a>
-					</li>
-					<?php endif ?>
-				</ul>
-			</div>
-		</div>
-	</div>
+<header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950">
+	<div class="mx-auto flex max-w-7xl items-center gap-6 px-5 py-3">
+		<a href="<?php echo Route::url('docs/guide') ?>" class="flex items-center gap-2 font-mono text-base font-bold tracking-tight text-white no-underline">
+			<span class="grid h-7 w-7 place-items-center rounded-md bg-ko8-600 text-sm text-white">k8</span>
+			ko8
+		</a>
 
-	<div id="kodoc-content">
-		<div class="wrapper">
-			<div class="container">
-				<?php if (count($breadcrumb) > 1): ?>
-				<div class="span-22 prefix-1 suffix-1">
-					<ul id="kodoc-breadcrumb">
-						<?php foreach ($breadcrumb as $link => $title): ?>
-							<?php if (is_string($link)): ?>
-							<li><?php echo HTML::anchor($link, $title, NULL, NULL, TRUE) ?></li>
-							<?php else: ?>
-							<li class="last"><?php echo $title ?></li>
-							<?php endif ?>
-						<?php endforeach ?>
-					</ul>
-				</div>
-				<?php endif ?>
-				<div class="span-6 prefix-1">
-					<div id="kodoc-topics">
-						<?php echo $menu ?>
-					</div>
-				</div>
-				<div id="kodoc-body" class="span-16 suffix-1 last">
-					<?php echo $content ?>
-
-					<?php if ($show_comments): ?>
-					<div id="disqus_thread" class="clear"></div>
-					<script type="text/javascript">
-						var disqus_identifier = '<?php echo HTML::chars(Request::current()->uri()) ?>';
-						(function() {
-							var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-							dsq.src = 'http://kohana.disqus.com/embed.js';
-							(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-							})();
-					</script>
-					<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript=kohana">comments powered by Disqus.</a></noscript>
-					<a href="http://disqus.com" class="dsq-brlink">Documentation comments powered by <span class="logo-disqus">Disqus</span></a>
-					<?php endif ?>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div id="kodoc-footer">
-		<div class="container">
-			<div class="span-12">
-			<?php if (isset($copyright)): ?>
-				<p><?php echo $copyright ?></p>
-			<?php else: ?>
-				&nbsp;
+		<nav class="flex items-center gap-1 text-sm">
+			<a class="rounded-md px-2.5 py-1.5 text-slate-300 no-underline hover:bg-slate-800 hover:text-white" href="<?php echo Route::url('docs/guide') ?>">User guide</a>
+			<?php if (Kohana::$config->load('userguide.api_browser')): ?>
+			<a class="rounded-md px-2.5 py-1.5 text-slate-300 no-underline hover:bg-slate-800 hover:text-white" href="<?php echo Route::url('docs/api') ?>">API</a>
 			<?php endif ?>
-			</div>
-			<div class="span-12 last right">
-			<p>Powered by <?php echo HTML::anchor('https://koseven.ga/', 'Koseven') ?> v<?php echo Kohana::VERSION ?></p>
-			</div>
-		</div>
-	</div>
+		</nav>
 
-<?php if (Kohana::$environment === Kohana::PRODUCTION): ?>
-<script type="text/javascript">
-//<![CDATA[
-(function() {
-	var links = document.getElementsByTagName('a');
-	var query = '?';
-	for(var i = 0; i < links.length; i++) {
-	if(links[i].href.indexOf('#disqus_thread') >= 0) {
-		query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
-	}
-	}
-	document.write('<script charset="utf-8" type="text/javascript" src="http://disqus.com/forums/kohana/get_num_replies.js' + query + '"></' + 'script>');
-})();
-//]]>
-</script>
-<?php endif ?>
+		<span class="ml-auto hidden font-mono text-xs text-slate-500 sm:block">v<?php echo Kohana::VERSION ?></span>
+	</div>
+</header>
+
+<div class="mx-auto flex max-w-7xl gap-8 px-5 py-8">
+
+	<aside class="hidden w-56 shrink-0 lg:block">
+		<nav class="ko8-doc-menu sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 text-sm" id="kodoc-topics">
+			<?php echo $menu ?>
+		</nav>
+	</aside>
+
+	<main class="min-w-0 flex-1">
+		<?php if (count($breadcrumb) > 1): ?>
+		<nav class="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-slate-500" aria-label="Breadcrumb">
+			<?php foreach ($breadcrumb as $link => $crumb): ?>
+				<?php if (is_string($link)): ?>
+					<a class="no-underline hover:text-ko8-600" href="<?php echo $link ?>"><?php echo $crumb ?></a>
+					<span class="text-slate-300">/</span>
+				<?php else: ?>
+					<span class="text-slate-700"><?php echo $crumb ?></span>
+				<?php endif ?>
+			<?php endforeach ?>
+		</nav>
+		<?php endif ?>
+
+		<article class="ko8-prose max-w-3xl" id="kodoc-body">
+			<?php echo $content ?>
+		</article>
+
+		<?php if ( ! empty($show_comments)): ?>
+		<div class="mt-12 border-t border-slate-200 pt-6">
+			<p class="text-xs text-slate-400">Comments are disabled on this build. Use the issue tracker instead.</p>
+		</div>
+		<?php endif ?>
+	</main>
+
+</div>
+
+<footer class="border-t border-slate-200 bg-slate-50">
+	<div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-5 py-5 text-xs text-slate-500">
+		<span><?php echo ! empty($copyright) ? $copyright : '&copy; ko8 contributors' ?></span>
+		<span class="font-mono">ko8 <?php echo Kohana::VERSION ?> (<?php echo Kohana::CODENAME ?>)</span>
+	</div>
+</footer>
+
 </body>
 </html>

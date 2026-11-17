@@ -27,6 +27,14 @@ class Kohana_Database_MySQLi extends Database {
 		if ($this->_connection)
 			return;
 
+		// PHP 8.1+ enables MYSQLI_REPORT_ERROR|MYSQLI_REPORT_STRICT by default.
+		// The driver, and every app written for it, relies on the legacy contract:
+		// mysqli_query() returns FALSE and the error is read from $connection->error.
+		if (function_exists('mysqli_report'))
+		{
+			mysqli_report(MYSQLI_REPORT_OFF);
+		}
+
 		if (Database_MySQLi::$_set_names === NULL)
 		{
 			// Determine if we can use mysqli_set_charset(), which is only
@@ -67,7 +75,7 @@ class Kohana_Database_MySQLi extends Database {
 				$this->_connection = new mysqli($hostname, $username, $password, $database, $port, $socket);
 			}
 		}
-		catch (Exception $e)
+		catch (Throwable $e)
 		{
 			// No connection exists
 			$this->_connection = NULL;
@@ -105,7 +113,7 @@ class Kohana_Database_MySQLi extends Database {
 			// Database is assumed disconnected
 			$status = TRUE;
 
-			if (is_resource($this->_connection))
+			if ($this->_connection instanceof mysqli)
 			{
 				if ($status = $this->_connection->close())
 				{
@@ -120,7 +128,7 @@ class Kohana_Database_MySQLi extends Database {
 		catch (Exception $e)
 		{
 			// Database is probably not disconnected
-			$status = ! is_resource($this->_connection);
+			$status = ! ($this->_connection instanceof mysqli);
 		}
 
 		return $status;
@@ -148,7 +156,7 @@ class Kohana_Database_MySQLi extends Database {
 		}
 	}
 
-	public function query($type, $sql, $as_object = FALSE, array $params = NULL)
+	public function query($type, $sql, $as_object = FALSE, ?array $params = NULL)
 	{
 		// Make sure the database is connected
 		$this->_connection or $this->connect();

@@ -101,7 +101,9 @@ class Kohana_Arr {
 		}
 		else
 		{
-			if (array_key_exists($path, $array))
+			// isset() instead of array_key_exists(): $array may be an ArrayObject
+			// (Config_Group), and array_key_exists() requires a real array in PHP 8.
+			if (isset($array[$path]))
 			{
 				// No need to do extra processing
 				return $array[$path];

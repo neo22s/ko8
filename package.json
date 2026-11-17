@@ -1,0 +1,13 @@
+{
+  "name": "ko8-assets",
+  "private": true,
+  "description": "Build de los assets de ko8 (Tailwind). El CSS compilado se versiona en system/media/css/.",
+  "scripts": {
+    "build": "tailwindcss -i ./assets/tailwind/ko8.css -o ./system/media/css/ko8.css --minify && cp system/media/css/ko8.css modules/userguide/media/guide/css/ko8.css",
+    "dev": "tailwindcss -i ./assets/tailwind/ko8.css -o ./system/media/css/ko8.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "tailwindcss": "^4.3.5"
+  }
+}

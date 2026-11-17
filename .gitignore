@@ -4,8 +4,9 @@ nbproject
 *.iml
 out
 gen
+.DS_Store
 
-# Kohana template
+# Kohana/ko8 template
 application/cache/*
 application/logs/*
 
@@ -13,5 +14,10 @@ application/logs/*
 /vendor/
 composer.lock
 
-# Coverage reports
+# Assets build (the compiled CSS *is* committed)
+/node_modules/
+npm-debug.log
+
+# Test artifacts
 /build/logs/
+.phpunit.cache/

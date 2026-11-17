@@ -1,17 +1,21 @@
-<h2>Modules</h2>
+<nav class="ko8-doc-menu text-sm" aria-label="Documentation menu">
 
-<?php if( ! empty($modules)): ?>
+	<h2 class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Modules</h2>
 
-	<ul>
-	<?php foreach($modules as $url => $options): ?>
-	
-		<li><?php echo html::anchor(Route::get('docs/guide')->uri(['module' => $url]), $options['name'], NULL, NULL, TRUE) ?></li>
-	
-	<?php endforeach; ?>
-	</ul>
+	<?php if ( ! empty($modules)): ?>
 
-<?php else: ?>
+		<ul class="space-y-1">
+		<?php foreach ($modules as $url => $options): ?>
+			<li>
+				<?php echo HTML::anchor(Route::get('docs/guide')->uri(['module' => $url]), $options['name'], ['class' => 'block rounded-md px-2.5 py-1.5 text-slate-600 no-underline hover:bg-slate-100 hover:text-slate-900'], NULL, TRUE) ?>
+			</li>
+		<?php endforeach ?>
+		</ul>
 
-	<p class="error">No modules.</p>
+	<?php else: ?>
 
-<?php endif; ?>
+		<p class="text-slate-500">No modules.</p>
+
+	<?php endif ?>
+
+</nav>

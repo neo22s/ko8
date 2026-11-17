@@ -13,5 +13,6 @@ function _strlen($str)
 	if (UTF8::is_ascii($str))
 		return strlen($str);
 
-	return strlen(utf8_decode($str));
+	// utf8_decode() is deprecated in PHP 8.2 and removed in PHP 9.
+	return mb_strlen($str, 'UTF-8');
 }

@@ -279,9 +279,29 @@ class Kohana_Date {
 
 		if ($format === Date::MONTHS_LONG OR $format === Date::MONTHS_SHORT)
 		{
+			// strftime() is deprecated since PHP 8.1. IntlDateFormatter honours the
+			// current locale; DateTime::format() is the locale-independent fallback.
+			$intl = NULL;
+
+			if (class_exists('IntlDateFormatter'))
+			{
+				$intl = new IntlDateFormatter(
+					class_exists('Locale') ? Locale::getDefault() : setlocale(LC_TIME, '0'),
+					IntlDateFormatter::NONE,
+					IntlDateFormatter::NONE,
+					'UTC',
+					IntlDateFormatter::GREGORIAN,
+					($format === Date::MONTHS_LONG) ? 'LLLL' : 'LLL'
+				);
+			}
+
 			for ($i = 1; $i <= 12; ++$i)
 			{
-				$months[$i] = strftime($format, mktime(0, 0, 0, $i, 1));
+				$date = new DateTime(sprintf('2000-%02d-01', $i), new DateTimeZone('UTC'));
+
+				$months[$i] = $intl
+					? $intl->format($date)
+					: $date->format(($format === Date::MONTHS_LONG) ? 'F' : 'M');
 			}
 		}
 		else

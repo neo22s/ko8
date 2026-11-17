@@ -832,7 +832,7 @@ class Kohana_ORM extends Model implements serializable {
 	 * @param  array $expected Array of keys to take from $values
 	 * @return ORM
 	 */
-	public function values(array $values, array $expected = NULL)
+	public function values(array $values, ?array $expected = NULL)
 	{
 		// Default to expecting everything except the primary key
 		if ($expected === NULL)
@@ -1418,7 +1418,7 @@ class Kohana_ORM extends Model implements serializable {
 	 * @throws ORM_Validation_Exception
 	 * @return ORM
 	 */
-	public function check(Validation $extra_validation = NULL)
+	public function check(?Validation $extra_validation = NULL)
 	{
 		// Determine if any external validation failed
 		$extra_errors = ($extra_validation AND ! $extra_validation->check());
@@ -1449,7 +1449,7 @@ class Kohana_ORM extends Model implements serializable {
 	 * @throws Kohana_Exception
 	 * @return ORM
 	 */
-	public function create(Validation $validation = NULL)
+	public function create(?Validation $validation = NULL)
 	{
 		if ($this->_loaded)
 			throw new Kohana_Exception('Cannot create :model model because it is already loaded.', [':model' => $this->_object_name]);
@@ -1515,7 +1515,7 @@ class Kohana_ORM extends Model implements serializable {
 	 * @throws Kohana_Exception
 	 * @return ORM
 	 */
-	public function update(Validation $validation = NULL)
+	public function update(?Validation $validation = NULL)
 	{
 		if ( ! $this->_loaded)
 			throw new Kohana_Exception('Cannot update :model model because it is not loaded.', [':model' => $this->_object_name]);
@@ -1586,7 +1586,7 @@ class Kohana_ORM extends Model implements serializable {
 	 * @param  Validation $validation Validation object
 	 * @return ORM
 	 */
-	public function save(Validation $validation = NULL)
+	public function save(?Validation $validation = NULL)
 	{
 		return $this->loaded() ? $this->update($validation) : $this->create($validation);
 	}

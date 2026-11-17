@@ -1,78 +1,78 @@
-[![Koseven Logo](https://i.imgur.com/2CeT8JL.png)](https://koseven.ga/)
+# ko8
 
-[![Latest Stable Version](https://poser.pugx.org/koseven/koseven/v/stable)](https://packagist.org/packages/koseven/koseven)
-[![Github Issues](http://githubbadges.herokuapp.com/koseven/koseven/issues.svg)](https://github.com/koseven/koseven/issues)
-[![Pending Pull-Requests](http://githubbadges.herokuapp.com/koseven/koseven/pulls.svg)](https://github.com/koseven/koseven/pulls)
-[![License](https://poser.pugx.org/koseven/koseven/license.svg)](https://packagist.org/packages/koseven/koseven)
-[![Telegram](https://img.shields.io/badge/Telegram-joinChat-blue.svg)](https://telegram.me/koseven)
-[![Build Status](https://travis-ci.org/koseven/koseven.svg?branch=devel)](https://travis-ci.org/koseven/koseven)
-[![Coverage Status](https://coveralls.io/repos/github/koseven/koseven/badge.svg?branch=devel)](https://coveralls.io/github/koseven/koseven?branch=devel)
+**The Koseven / Kohana 3.3 API on modern PHP.** Lightweight HMVC, cascading filesystem, zero magic. No DI container, no annotations, no 40-package dependency tree.
 
-## [Download 3.3.8](https://github.com/koseven/koseven/releases/tag/3.3.8)
+```bash
+composer create-project ko8/ko8 myapp
+```
 
-### [Join the Telegram group](https://telegram.me/koseven)
+Requires PHP 8.1+. Runs on 8.1, 8.2, 8.3, 8.4 and 8.5.
 
-Koseven is a PHP framework based on defunct [Kohana](http://kohanaframework.org/) 3.3.X . Fully compatible with Kohana and updated to work with PHP7
+## Why
 
-Koseven is an elegant, open source, and object oriented HMVC framework built using PHP7, by a team of volunteers. It aims to be swift, secure, and small.
+Koseven kept Kohana alive for the PHP 7 era. It was archived in 2026. Its job — getting legacy Kohana applications onto a supported PHP — is still unfinished for anyone on PHP 8.
 
-Released under a [BSD license](LICENSE.md), Koseven can be used legally for any open source, commercial, or personal project.
+ko8 finishes that job:
 
-## History/Why a Kohana alternative?
+- **Same API.** `Model_*`, `Controller_*`, `Route::set()`, `ORM::factory()`, `Kohana::$config`, the cascading filesystem and the transparent class extension all work unchanged.
+- **PHP 8 clean.** No deprecations on 8.1–8.5. No `mcrypt`, no `utf8_decode`, no `strftime`, no `each()`.
+- **Small.** ~17k lines of core. You can read all of it in an afternoon.
+- **Modern tooling.** Composer, PHPUnit 11, Rector, Tailwind. No Travis, no Docker image, no vendored 2011 Markdown parser.
 
-Kohana 3.3.x is used by us in many live projects, and the original team (where @neo22s belonged too) stopped the development a while ago and on Feb 4, 2017 Shadowhand announced the final retirement [Kohana is DEAD](http://discourse.kohanaframework.org/t/kohana-retirement-2017-07-01/1277).
+## Status
 
-Before the final announcement everyone started to check if it was possible to migrate existing projects to other alternative PHP frameworks. As it turned out switching would be a complex and lengthy job.
-So it became clear that keeping the project alive and updated is a priority.
+| | |
+|---|---|
+| PHP | 8.1 – 8.5 |
+| Tests | PHPUnit 11, `composer test` |
+| Licence | BSD-3-Clause |
 
-And so the Koseven repository was born and will keep this repository updated for future releases of PHP, giving the framework a clear perspective for the future.
+This is an early alpha. The framework API is stable because it is Koseven's; the packaging, docs and test suite are new.
 
-## Will work as dropin of Kohana?
+## Layout
 
-If you were using 3.3.x version you may need to make some small changes. Please refer to [upgrading from kohana](https://docs.koseven.ga/guide/kohana/upgrading-from-kohana) section of the documentation.
+```
+application/    your code: controllers, models, views, config
+modules/        optional components (database, orm, auth, cache, image, minion…)
+system/         the framework
+  classes/      Kohana_* implementation + transparent extension shims
+  src/Ko8/      PSR-4 namespace for new code
+public/         document root (index.php, install.php)
+tests/          PHPUnit 11 suite
+assets/         Tailwind source
+```
 
-## What changes have you made?
+## Quick start
 
-So far is mostly as the last stable version of Kohana 3.3.6 released on Jul 25, 2016. But compatible with PHP 7.
+1. `composer install`
+2. Point your web server at `public/`
+3. Open `/install.php` and fix whatever it reports
+4. Set `Cookie::$salt` in `application/bootstrap.php`
+5. Delete `public/install.php`
 
-## What are the future plans for the project?
+## Migrating from Koseven
 
-Our focus is to keep the framework compatible with new releases of PHP, fix bugs and try to improve the speed. New features can be added using modules.
+Read [docs/migration.md](docs/migration.md). Short version: replace `system/` and `modules/`, keep `application/`. Most applications need six files touched.
 
-There is a dedicated [versions and roadmap](https://koseven.ga/roadmap.html) page for the supported versions and plans.
+Wrong answer first: renaming classes to `Ko8_*` would break every app for no functional gain. `Kohana_*` stays; `Ko8\` is where new code goes.
 
-## Are modules of the original Kohana compatible?
+## Tests
 
-Yes they are, just be sure that they are compatible with Kohana 3.3.X. An overview of Koseven's team own modules can be found on [modules](https://koseven.ga/modules.html) page. There's also a list online with a nice overview of existing kohana modules maintained (or abandoned) by others. You can consult this list at [kohana-modules.com](https://kohana-modules.com)
+```bash
+composer test
+```
 
-### Why all modules in 1 repo?
+The suite has no in-app runner, no web UI and no module bootstrap. `tests/bootstrap.php` is 30 lines.
 
-This was personal choice of @neo22s to keep the project as simple and easier to manage. The modules are commonly used and are not enabled by default. If not used they can be removed from the codebase.
+## Assets
 
-## I Need help!
+The compiled CSS is committed, so production does not need Node:
 
-Feel free to [open an issue on github](https://github.com/koseven/koseven/issues/new). Please be as specific as possible if you want to get help. You can also [Join the Telegram group](https://telegram.me/koseven) 
+```bash
+npm install
+npm run build
+```
 
-## Documentation
+## Licence
 
-We are working to improve the original Kohana documentation but in the meantime feel free to use the one provided by Kohana.
-
-Koseven documentation can be found at [docs.koseven.ga](https://docs.koseven.ga) which also contains an API browser.
-
-The `userguide` module included in all Kohana/Koseven releases allows you to view the documentation locally. To use it you need to enable the`userguide` module in the bootstrap.php file (found in the `application` directory). Next you should be able to read the documentation from your own site via `/index.php/guide` (or just `/guide` if you are rewriting your URLs).
-
-## Reporting bugs
-If you've stumbled across a bug, please help us out by [reporting the bug](https://github.com/koseven/koseven/issues/new) you have found. Simply log in or register and submit a new issue, leaving as much information about the bug as possible, e.g.
-
-* Steps to reproduce
-* Expected result
-* Actual result
-
-This will help us to fix the bug as quickly as possible, and if you'd like to fix it yourself feel free to [fork us on GitHub](https://github.com/koseven) and submit a pull request!
-
-## Reporting security vulnerabilities
-Open an [issue](https://github.com/koseven/koseven/issues/new) on github and describe the problem as detailed as possible. Or do a pull request if you have a patch and describe the issue there.
-
-## Contributing
-
-Any help is more than welcome! Please see [Contributing](CONTRIBUTING.md)
+BSD-3-Clause, inherited from Kohana and Koseven. See [LICENSE.md](LICENSE.md).

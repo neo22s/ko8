@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.5/phpunit.xsd"
-		bootstrap="modules/unittest/bootstrap.php"
-		forceCoversAnnotation="false"
-		beStrictAboutCoversAnnotation="false"
-		beStrictAboutOutputDuringTests="true"
-		beStrictAboutTodoAnnotatedTests="true"
-		verbose="false">
-	<testsuite name="default">
-		<directory suffix="tests.php">modules/unittest/</directory>
-	</testsuite>
-
-	<logging>
-		<log type="coverage-clover" target="build/logs/clover.xml"/>
-		<log type="coverage-html" target="build/logs/"/>
-	</logging>
-
-	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">./application/classes</directory>
-			<directory suffix=".php">./modules/*/classes</directory>
-			<directory suffix=".php">./system/classes</directory>
-		</whitelist>
-	</filter>
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         beStrictAboutOutputDuringTests="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">tests/unit</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">system/classes</directory>
+            <directory suffix=".php">modules/*/classes</directory>
+        </include>
+        <exclude>
+            <directory>modules/userguide</directory>
+            <directory>modules/codebench</directory>
+        </exclude>
+    </source>
+    <php>
+        <ini name="memory_limit" value="512M"/>
+    </php>
 </phpunit>

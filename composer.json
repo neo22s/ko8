@@ -1,43 +1,39 @@
 {
-  "name": "koseven/koseven",
-  "description": "Koseven Framework - PHP-7 compatible replacement for Kohana",
+  "name": "ko8/ko8",
+  "description": "ko8 - the Koseven/Kohana 3.3 API on modern PHP. Lightweight HMVC, zero magic.",
   "license": "BSD-3-Clause",
-  "keywords": [
-    "kohana",
-    "kohana-php7",
-    "koseven"
-  ],
-  "homepage": "https://koseven.ga/",
+  "keywords": ["kohana", "koseven", "ko8", "hmvc", "framework"],
+  "homepage": "https://ko8.dev/",
   "authors": [
-    {
-      "name": "Koseven Team",
-      "homepage": "https://koseven.ga/",
-      "role": "developer"
-    },
-    {
-      "name": "Kohana Team",
-      "email": "team@kohanaframework.org",
-      "homepage": "http://kohanaframework.org/team",
-      "role": "developer"
-    }
+    { "name": "ko8 contributors" },
+    { "name": "Koseven Team", "homepage": "https://koseven.dev/", "role": "developer" },
+    { "name": "Kohana Team", "homepage": "http://kohanaframework.org/team", "role": "developer" }
   ],
   "support": {
-    "forum": "https://telegram.me/koseven",
-    "issues": "https://github.com/koseven/koseven/issues"
+    "issues": "https://github.com/ko8/ko8/issues"
   },
   "require": {
-    "php": ">=7.0"
+    "php": ">=8.1",
+    "ext-mbstring": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.0|^7.0",
-    "phpunit/dbunit":"^3.0",
-    "phpunit/phpcov": "^4.0",
-    "php-coveralls/php-coveralls": "^2.0"
+    "phpunit/phpunit": "^11.5",
+    "rector/rector": "^2.8"
   },
-  "conflict": {
-    "kohana/core": "3.3.*"
+  "autoload": {
+    "psr-4": { "Ko8\\": "system/src/Ko8/" }
   },
   "replace": {
-    "kohana/core": "3.3.*"
+    "kohana/core": "3.3.*",
+    "koseven/koseven": "3.3.9"
+  },
+  "config": {
+    "allow-plugins": false,
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": "phpunit",
+    "rector": "rector process --dry-run",
+    "lint": "find system modules -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null"
   }
 }
