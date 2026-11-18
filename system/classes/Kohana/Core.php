@@ -16,8 +16,19 @@
 class Kohana_Core {
 
 	// Release version and codename
-	const VERSION  = '3.3.9';
-	const CODENAME = 'karlsruhe';
+	const VERSION  = '8.0.0';
+	const CODENAME = 'genesis';
+
+	/**
+	 * Koseven release whose API this version implements.
+	 *
+	 * The whole point of ko8 is that `$foo instanceof Kohana_Exception`,
+	 * `Kohana::$config`, `ORM::factory()` and every other public API behave
+	 * exactly as they did in Koseven 3.3.9. When an application needs to know
+	 * whether it is running on the old or the new framework, this is the
+	 * constant to compare against, not VERSION.
+	 */
+	const KOSEVEN_COMPAT = '3.3.9';
 
 	// Common environment type constants for consistency and convenience
 	const PRODUCTION  = 10;
@@ -997,7 +1008,7 @@ class Kohana_Core {
 	 */
 	public static function version()
 	{
-		return 'Koseven '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
+		return 'ko8 '.Kohana::VERSION.' ('.Kohana::CODENAME.')';
 	}
 
 }
