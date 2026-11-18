@@ -36,7 +36,7 @@
 <div class="mx-auto flex max-w-7xl gap-8 px-5 py-8">
 
 	<aside class="hidden w-56 shrink-0 lg:block">
-		<nav class="ko8-doc-menu sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 text-sm" id="kodoc-topics">
+		<nav class="ko8-doc-menu sticky top-20 max-h-[calc(100vh_-_6rem)] overflow-y-auto pr-2 text-sm" id="kodoc-topics">
 			<?php echo $menu ?>
 		</nav>
 	</aside>
