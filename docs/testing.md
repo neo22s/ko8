@@ -68,6 +68,24 @@ is a class that compiles cleanly on PHP 8.5.
 
 Everything else — 1441 tests, 3030 assertions — runs as written.
 
+## The smoke test
+
+The suites cover behaviour class by class. `composer smoke` covers the thing they
+cannot: that the framework starts, autoloads, routes a request, renders a page,
+renders the error page and round-trips an encrypted string on the PHP version
+that is actually running.
+
+```bash
+composer smoke      # PHP 8.5.12 · 12 checks, 0 failed
+```
+
+It matters on PHP 8.1 in particular: PHPUnit 11 requires 8.2, so 8.1 cannot run
+the suites at all. `composer smoke` is what proves 8.1 still works, and it is
+also the first thing to run when an application misbehaves — it separates "the
+framework is broken" from "the application is broken" in one second.
+
+CI runs it on 8.1 through 8.5 and runs the suites on 8.2 through 8.5.
+
 ## Known gaps
 
 - No database in CI by default. `Database` and `ORM` are only exercised where they do not need a connection.

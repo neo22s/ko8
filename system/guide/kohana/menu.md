@@ -19,7 +19,7 @@
    - [Routing](routing)
    - [Error Handling](errors)
    - [Tips & Common Mistakes](tips)
-   - [Upgrading from Kohana](upgrading-from-kohana)
+   - [Upgrading to ko8](upgrading-from-kohana)
 - Basic Usage
    - [Debugging](debugging)
    - [Loading Classes](autoloading)

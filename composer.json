@@ -36,14 +36,9 @@
     "phpunit/phpunit": "^11.5",
     "rector/rector": "^2.8"
   },
-  "autoload": {
-    "psr-4": {
-      "Ko8\\": "system/src/Ko8/"
-    }
-  },
   "replace": {
     "kohana/core": "3.3.*",
-    "koseven/koseven": "3.3.9"
+    "koseven/koseven": "3.3.*"
   },
   "config": {
     "allow-plugins": false,
@@ -51,13 +46,16 @@
   },
   "scripts": {
     "test": "phpunit",
-    "rector": "rector process --dry-run",
-    "lint": "find system modules -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null",
     "test:legacy": "phpunit -c phpunit.legacy.xml",
     "test:all": [
       "@test",
       "@test:legacy"
-    ]
+    ],
+    "smoke": "php tools/smoke-test.php",
+    "doctor": "php bin/ko8-doctor.php application",
+    "check:guide": "php tools/check-guide-links.php",
+    "lint": "find system modules application bin tools public -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null",
+    "rector": "rector process --dry-run"
   },
   "version": "8.0.0-alpha.1"
 }

@@ -23,11 +23,16 @@ ko8 finishes that job:
 
 | | |
 |---|---|
+| ko8 | 8.0.0 `genesis` |
+| Koseven API | 3.3.9 (`Kohana::KOSEVEN_COMPAT`) |
 | PHP | 8.1 – 8.5 |
 | Tests | PHPUnit 11, `composer test` |
 | Licence | BSD-3-Clause |
 
 This is an early alpha. The framework API is stable because it is Koseven's; the packaging, docs and test suite are new.
+
+`Kohana::VERSION` reports `8.0.0`, not `3.3.9`. Two different codebases answering with the same version string is a support problem, and an application that needs to know which API it has should compare `Kohana::KOSEVEN_COMPAT`, not `VERSION`.
+
 
 ## Layout
 
@@ -36,9 +41,10 @@ application/    your code: controllers, models, views, config
 modules/        optional components (database, orm, auth, cache, image, minion…)
 system/         the framework
   classes/      Kohana_* implementation + transparent extension shims
-  src/Ko8/      PSR-4 namespace for new code
 public/         document root (index.php, install.php)
 tests/          PHPUnit 11 suite
+tools/          smoke test, guide link checker, docs crawler
+bin/            ko8-doctor.php
 assets/         Tailwind source
 ```
 
@@ -54,16 +60,40 @@ assets/         Tailwind source
 
 Read [docs/migration.md](docs/migration.md). Short version: replace `system/` and `modules/`, keep `application/`. Most applications need six files touched.
 
-Wrong answer first: renaming classes to `Ko8_*` would break every app for no functional gain. `Kohana_*` stays; `Ko8\` is where new code goes.
+Start with the doctor. It reads the application without executing it and tells you what will break, with the file, the line and the fix:
+
+```bash
+php bin/ko8-doctor.php application
+```
+
+```
+ko8 doctor · 939 files scanned
+
+WILL BREAK (1)
+  oc/common/classes/oc/i18n.php:449
+    money_format() was removed in PHP 8.0.
+    fix: NumberFormatter::formatCurrency()
+
+Summary: 1 will break, 0 probably break, 0 to check.
+```
+
+Exit `0` clean, `1` something will break, `2` only warnings. `--json` for CI.
+
+Wrong answer first: renaming classes to `Ko8_*` would break every app for no functional gain. `Kohana_*` stays, and so does the `Kohana_` prefix on every transparent extension, because that is what `Kohana::auto_load()` looks for.
 
 ## Tests
 
 ```bash
 composer test          # ko8 suite
 composer test:legacy   # the inherited Kohana/Koseven suite (1441 tests)
+composer smoke         # boot, route, render: 12 checks on your PHP version
+composer check:guide   # every guide link and docblock link
+composer doctor        # scan application/ for code that will not run on PHP 8
 ```
 
 The suite has no in-app runner and no module bootstrap. `tests/bootstrap.php` is 50 lines. See [docs/testing.md](docs/testing.md).
+
+CI is `.github/workflows/tests.yml`: the smoke test on PHP 8.1 – 8.5, the suites on 8.2 – 8.5 (PHPUnit 11 requires 8.2).
 
 ## Documentation
 
@@ -71,7 +101,7 @@ Every module keeps its Markdown under `guide/`. With the `userguide` module enab
 
 - `/guide` — index of documented modules
 - `/guide/kohana/install` — installation guide
-- `/guide/kohana/upgrading-from-kohana` — what changed and why
+- `/guide/kohana/upgrading-from-kohana` — the road from Kohana to Koseven to ko8
 - `/guide-api` — reflection-based API browser
 
 `/guide/install` redirects to the core guide page, because that is the URL people remember.

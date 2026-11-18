@@ -75,8 +75,8 @@ $checks = [
 
 <footer class="border-t border-slate-800">
 	<div class="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-2 px-5 py-5 font-mono text-xs text-slate-600">
-		<span>ko8 <?php echo Kohana::VERSION ?> · <?php echo Kohana::CODENAME ?></span>
 		<span><?php echo Kohana::version() ?></span>
+		<span>Koseven API <?php echo Kohana::KOSEVEN_COMPAT ?></span>
 	</div>
 </footer>
 
