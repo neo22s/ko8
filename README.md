@@ -203,7 +203,7 @@ assets/         Tailwind source
 2. Point your web server at `public/`
 3. Open `/install.php` and fix whatever it reports
 4. Set `Cookie::$salt` in `application/bootstrap.php`
-5. Delete `public/install.php`
+5. Delete `install.php`
 
 ![The installer](docs/screenshots/06-installer.png)
 

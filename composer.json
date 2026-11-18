@@ -57,6 +57,5 @@
     "check:guide": "php tools/check-guide-links.php",
     "lint": "find system modules application bin tools public -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null",
     "rector": "rector process --dry-run"
-  },
-  "version": "8.0.0-alpha.1"
+  }
 }

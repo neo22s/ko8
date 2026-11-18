@@ -82,8 +82,7 @@ everyone".]
 
 **You:**
 
-> That is the last commit. "Project archived, thank you everyone." And fair
-> enough — nobody owes anyone maintenance forever.
+> That is the last commit. And fair enough — nobody owes anyone maintenance forever.
 >
 > But it leaves every application that depends on it in the exact position
 > Koseven was in 2016, one PHP version later. PHP 8 removed `mcrypt`. It removed

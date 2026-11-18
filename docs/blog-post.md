@@ -10,7 +10,7 @@ It was also good. For a while, very good: fast, clean, and used by a lot of prod
 
 Then PHP moved on and the team moved on, which is how open source usually ends. On 1 July 2017 Kohana was officially retired. By then a few of us had already done the obvious thing: fork it and take it to PHP 7. That fork was Koseven — tagged **ko7**, Kohana for PHP 7 — and it exists because of exactly one application: **open eShop**, a classifieds and e-commerce platform I have been shipping since 2013. Rewriting it was never an option. Rewriting the framework underneath it was an afternoon.
 
-Koseven held for eight years. Then, in April 2026, it was archived too: *"docs: project archived — thank you everyone"*.
+Koseven held for eight years. Then, in April 2026, it was archived too.
 
 That leaves every Kohana and Koseven application in the same place Koseven was in 2016, one PHP version later. PHP 8 removed `mcrypt`, removed `each()`, removed `money_format()`, turned `count(null)` into an exception and `array_key_exists()` on an object into a `TypeError`. The application still works. The platform underneath it does not.
 
@@ -29,6 +29,7 @@ ko8 is not a rewrite, a modernisation, or a framework inspired by Kohana. It is 
 | Last release | 3.3.6 (2016) | 3.3.10 (2020) | **8.0.0** `genesis` |
 | PHP | 5.3 – 7.0 | 7.0 – 8.0 | **8.1 – 8.5** |
 | `Kohana::VERSION` | `3.3.6` | `3.3.9` | `8.0.0` |
+| `Kohana::KOSEVEN_COMPAT` | — | — | `3.3.9` |
 
 The version number changed because the code did. Two codebases answering `3.3.9` is a support problem, so ko8 says `8.0.0` and keeps a `Kohana::KOSEVEN_COMPAT = '3.3.9'` constant for code that needs to know which API it is running against.
 
