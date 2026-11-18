@@ -17,7 +17,7 @@ sort($names);
 <div id="kodoc-api-classes" class="flex flex-wrap gap-2">
 <?php foreach ($names as $name): ?>
 	<a class="kodoc-api-class inline-block rounded-md border border-slate-200 px-2.5 py-1 font-mono text-xs text-slate-700 no-underline hover:border-ko8-300 hover:bg-ko8-50"
-		href="<?php echo $route->uri(['class' => $name]) ?>"><?php echo HTML::chars($name) ?></a>
+		href="<?php echo Route::url('docs/api', ['class' => $name]) ?>"><?php echo HTML::chars($name) ?></a>
 <?php endforeach ?>
 </div>
 

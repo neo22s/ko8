@@ -32,9 +32,14 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 			$this->media = Route::get('docs/media');
 			$this->guide = Route::get('docs/guide');
 
-			// Set the base URL for links and images
-			Kodoc_Markdown::$base_url  = URL::site($this->guide->uri()).'/';
-			Kodoc_Markdown::$image_url = URL::site($this->media->uri()).'/';
+			// Resolve links against real site paths. These are absolute, so a
+			// page rendered at /guide/a/b and a docblock rendered at /guide-api/X
+			// both produce links a browser follows correctly.
+			Kodoc_Links::$guide_url = URL::site($this->guide->uri());
+			Kodoc_Links::$api_url   = URL::site(Route::get('docs/api')->uri());
+			Kodoc_Links::$media_url = URL::site($this->media->uri());
+			Kodoc_Links::$module    = '';
+			Kodoc_Links::$page      = '';
 		}
 
 		// Default show_comments to config value
@@ -66,14 +71,14 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 		// If we are in a module and that module has a menu, show that
 		if ($module = $this->request->param('module') AND $menu = $this->file($module.'/menu') AND Kohana::$config->load('userguide.modules.'.$module.'.enabled'))
 		{
-			// Namespace the markdown parser
-			Kodoc_Markdown::$base_url  = URL::site($this->guide->uri()).'/'.$module.'/';
-			Kodoc_Markdown::$image_url = URL::site($this->media->uri()).'/'.$module.'/';
+			// The menu links are relative to the module root.
+			Kodoc_Links::$module = $module;
+			Kodoc_Links::$page   = '';
 
 			$this->template->menu = Kodoc_Markdown::markdown($this->_get_all_menu_markdown());
 			$this->template->breadcrumb = [
-				$this->guide->uri() => 'User Guide',
-				$this->guide->uri(['module' => $module]) => Kohana::$config->load('userguide.modules.'.$module.'.name'),
+				Route::url('docs/guide') => 'User Guide',
+				Route::url('docs/guide', ['module' => $module]) => Kohana::$config->load('userguide.modules.'.$module.'.name'),
 				'Error'
 			];
 		}
@@ -84,8 +89,8 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 
 			// Bind the breadcrumb
 			$this->template->breadcrumb = [
-				$this->guide->uri(['page' => NULL]) => 'User Guide',
-				$this->request->route()->uri() => 'API Browser',
+				Route::url('docs/guide') => 'User Guide',
+				Route::url('docs/api') => 'API Browser',
 				'Error'
 			];
 		}
@@ -93,7 +98,7 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 		else
 		{
 			$this->template->menu = View::factory('userguide/menu',['modules' => $this->_modules()]);
-			$this->template->breadcrumb = [$this->request->route()->uri() => 'User Guide','Error'];
+			$this->template->breadcrumb = [Route::url('docs/guide') => 'User Guide','Error'];
 		}
 	}
 
@@ -149,9 +154,9 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 			return $this->error('Userguide page not found');
 		}
 		
-		// Namespace the markdown parser
-		Kodoc_Markdown::$base_url  = URL::site($this->guide->uri()).'/'.$module.'/';
-		Kodoc_Markdown::$image_url = URL::site($this->media->uri()).'/'.$module.'/';
+		// Links on this page are relative to it: /guide/<module>/<page>.
+		Kodoc_Links::$module = $module;
+		Kodoc_Links::$page   = ($page === 'index') ? '' : $page;
 
 		// Set the page title
 		$this->template->title = ($page == 'index')
@@ -174,8 +179,8 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 
 		// Add the breadcrumb trail
 		$breadcrumb = [];
-		$breadcrumb[$this->guide->uri()] = 'User Guide';
-		$breadcrumb[$this->guide->uri(['module' => $module])] = Kohana::$config->load('userguide.modules.'.$module.'.name');
+		$breadcrumb[Route::url('docs/guide')] = 'User Guide';
+		$breadcrumb[Route::url('docs/guide', ['module' => $module])] = Kohana::$config->load('userguide.modules.'.$module.'.name');
 		
 		// TODO try and get parent category names (from menu).  Regex magic or javascript dom stuff perhaps?
 		
@@ -241,8 +246,8 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 
 		// Add the breadcrumb
 		$breadcrumb = [];
-		$breadcrumb[$this->guide->uri(['page' => NULL])] = 'User Guide';
-		$breadcrumb[$this->request->route()->uri()] = 'API Browser';
+		$breadcrumb[Route::url('docs/guide')] = 'User Guide';
+		$breadcrumb[Route::url('docs/api')] = 'API Browser';
 		$breadcrumb[] = $this->template->title;
 	}
 

@@ -107,4 +107,40 @@ final class ApiBrowserTest extends KO8_TestCase
 		$this->assertStringContainsString('<h1', $response->body());
 		$this->assertStringContainsString('Requirements', $response->body());
 	}
+
+	/**
+	 * Every link on a rendered page must be absolute. A relative one resolves
+	 * against the current URL, so "guide-api/Log" on /guide-api/X becomes
+	 * /guide-api/guide-api/Log, which is the 404 this test exists to prevent.
+	 */
+	public function test_guide_links_are_absolute(): void
+	{
+		foreach (['guide-api/HTTP_Exception_404', 'guide/kohana/mvc/controllers', 'guide/kohana/install'] AS $uri)
+		{
+			$body = Request::factory($uri)->execute()->body();
+
+			preg_match_all('/href="([^"]+)"/', $body, $matches);
+
+			foreach ($matches[1] AS $href)
+			{
+				$this->assertMatchesRegularExpression(
+					'~^(?:https?://|//|#|mailto:|/index\.php/)~',
+					$href,
+					$uri.' contains a relative link: '.$href
+				);
+			}
+		}
+	}
+
+	/**
+	 * A docblock link such as [Cascading Filesystem](kohana/files) has to point
+	 * at the guide, not at a path under /guide-api/.
+	 */
+	public function test_docblock_guide_links_resolve_to_the_guide(): void
+	{
+		$body = Request::factory('guide-api/Kohana')->execute()->body();
+
+		$this->assertStringContainsString('/guide/kohana/files', $body);
+		$this->assertStringNotContainsString('guide-api/kohana/files', $body);
+	}
 }

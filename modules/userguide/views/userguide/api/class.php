@@ -3,12 +3,12 @@
 		<span class="font-normal text-slate-400"><?php echo $doc->modifiers ?></span><?php echo $doc->class->name ?>
 	</h1>
 	<?php foreach ($doc->parents as $parent): ?>
-		<p class="my-0 text-sm text-slate-500">extends <a class="text-ko8-600 no-underline hover:underline" href="<?php echo $route->uri(['class' => $parent->name]) ?>"><?php echo $parent->name ?></a></p>
+		<p class="my-0 text-sm text-slate-500">extends <?php echo Kodoc::class_link($parent->name) ?></p>
 	<?php endforeach ?>
 	<?php if ($interfaces = $doc->class->getInterfaceNames()): ?>
 		<p class="my-0 text-sm text-slate-500">implements
 			<?php foreach ($interfaces as $i => $interface): ?>
-				<?php echo $i ? ', ' : '' ?><a class="text-ko8-600 no-underline hover:underline" href="<?php echo $route->uri(['class' => $interface]) ?>"><?php echo $interface ?></a>
+				<?php echo $i ? ', ' : '' ?><?php echo Kodoc::class_link($interface) ?>
 			<?php endforeach ?>
 		</p>
 	<?php endif ?>
@@ -16,7 +16,7 @@
 
 <?php if ($child = $doc->is_transparent($doc->class->name)): ?>
 <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-	This class is a transparent base class for <a class="font-semibold underline" href="<?php echo $route->uri(['class' => $child]) ?>"><?php echo $child ?></a> and should not be accessed directly.
+	This class is a transparent base class for <?php echo Kodoc::class_link($child) ?> and should not be accessed directly.
 </div>
 <?php endif ?>
 

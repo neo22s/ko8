@@ -11,16 +11,6 @@
 class Kohana_Kodoc_Markdown extends MarkdownExtra_Parser {
 
 	/**
-	 * @var  string  base url for links
-	 */
-	public static $base_url = '';
-
-	/**
-	 * @var  string  base url for images
-	 */
-	public static $image_url = '';
-	
-	/**
 	 * Currently defined heading ids.
 	 * Used to prevent creating multiple headings with same id.
 	 *
@@ -202,31 +192,72 @@ class Kohana_Kodoc_Markdown extends MarkdownExtra_Parser {
 	}
 
 	/**
-	 * Add the current base url to all local links.
+	 * Resolve every local link against the guide.
 	 *
-	 *     [filesystem](about.filesystem "Optional title")
+	 * Links are written relative to the page, the module or the guide root, and
+	 * some of them point at pages that no longer exist. Resolution happens
+	 * here, once, so the HTML only contains real absolute paths.
 	 *
-	 * @param   string  Span text
+	 * @param   string  $text  Markdown text
 	 * @return  string
 	 */
 	public function doBaseURL($text)
 	{
-		// URLs containing "://" are left untouched
-		return preg_replace('~(?<!!)(\[.+?\]\()(?!\w++://)(?!#)(\S*(?:\s*+".+?")?\))~', '$1'.Kodoc_Markdown::$base_url.'$2', $text);
+		return preg_replace_callback(
+			'~(?<!!)(\[.+?\]\()([^)\s]+)((?:\s+"[^"]*")?\))~s',
+			function (array $matches): string
+			{
+				$target = $matches[2];
+
+				if (preg_match('~^[a-z][a-z0-9+.-]*://~i', $target) OR str_starts_with($target, '//'))
+				{
+					return $matches[0];
+				}
+
+				$resolved = Kodoc_Links::resolve($target);
+
+				// A link to a missing page stays as plain text: the link text is
+				// already inside $matches[1], so returning it unlinked avoids a
+				// dead end in the middle of a paragraph.
+				if ($resolved === FALSE)
+				{
+					$text = trim(substr($matches[1], 1, -2));
+
+					return $text;
+				}
+
+				return $matches[1].$resolved.$matches[3];
+			},
+			$text
+		);
 	}
 
 	/**
-	 * Add the current base url to all local images.
+	 * Resolve local images against the guide media route.
 	 *
 	 *     ![Install Page](img/install.png "Optional title")
 	 *
-	 * @param   string  Span text
+	 * @param   string  $text  Markdown text
 	 * @return  string
 	 */
 	public function doImageURL($text)
 	{
-		// URLs containing "://" are left untouched
-		return preg_replace('~(!\[.+?\]\()(?!\w++://)(\S*(?:\s*+".+?")?\))~', '$1'.Kodoc_Markdown::$image_url.'$2', $text);
+		return preg_replace_callback(
+			'~(!\[.+?\]\()([^)\s]+)((?:\s+"[^"]*")?\))~s',
+			function (array $matches): string
+			{
+				$resolved = Kodoc_Links::image($matches[2]);
+
+				if ($resolved === FALSE)
+				{
+					// Keep the alt text, drop the broken image.
+					return trim(substr($matches[1], 2, -2));
+				}
+
+				return $matches[1].$resolved.$matches[3];
+			},
+			$text
+		);
 	}
 
 	/**

@@ -9,7 +9,7 @@ $declares = $doc->method->getDeclaringClass();
 		</h3>
 		<?php if ($declares->name !== $doc->class->name): ?>
 		<span class="font-mono text-[11px] text-slate-500">
-			inherited from <a class="text-ko8-600 no-underline hover:underline" href="<?php echo $route->uri(['class' => $declares->name]) ?>"><?php echo $declares->name ?></a>
+			inherited from <?php echo Kodoc::class_link($declares->name) ?>
 		</span>
 		<?php endif ?>
 	</div>

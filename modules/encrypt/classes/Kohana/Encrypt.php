@@ -74,22 +74,25 @@ class Kohana_Encrypt {
 	{
 		if (is_string($key_config))
 		{
-			$this->_engine = new Encrypt_Engine_Mcrypt($key_config, $mode, $cipher);
+			// The old `new Encrypt($key, $mode, $cipher)` signature was mcrypt's.
+			// Map it to the modern engine instead of throwing.
+			$key_config = [
+				'type'   => 'openssl',
+				'key'    => $key_config,
+				'cipher' => 'AES-256-CBC',
+			];
 		}
-		
-		else
+		elseif ( ! isset($key_config['type']))
 		{
-			if ( ! isset($key_config['type']))
-			{
-				$key_config['type'] = 'mcrypt';
-			}
-
-			// Set the engine class name
-			$engine_name = 'Encrypt_Engine_'.ucfirst($key_config['type']);
-
-			// Create the engine class
-			$this->_engine = new $engine_name($key_config);
+			// mcrypt has not existed since PHP 7.2; openssl ships with PHP.
+			$key_config['type'] = 'openssl';
 		}
+
+		// Set the engine class name
+		$engine_name = 'Encrypt_Engine_'.ucfirst($key_config['type']);
+
+		// Create the engine class
+		$this->_engine = new $engine_name($key_config);
 	}
 
 	/**

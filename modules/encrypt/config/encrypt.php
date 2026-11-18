@@ -3,16 +3,17 @@
 return [
 
 	'default' => [
-		'type' => 'mcrypt',
 		/**
-		 * The following options must be set:
+		 * The engine to use. `openssl` is the only one that exists in modern
+		 * PHP: ext/mcrypt was removed in PHP 7.2, and its cipher and mode
+		 * constants are undefined, which is a fatal error.
 		 *
-		 * string   key     secret passphrase
-		 * integer  mode    encryption mode, one of MCRYPT_MODE_*
-		 * integer  cipher  encryption cipher, one of the Mcrpyt cipher constants
+		 * string   type    engine: openssl or sodium
+		 * string   key     secret passphrase (32 bytes for AES-256-CBC)
+		 * string   cipher  OpenSSL cipher name
 		 */
-		'cipher' => MCRYPT_RIJNDAEL_128,
-		'mode' => MCRYPT_MODE_NOFB,
+		'type'   => 'openssl',
+		'cipher' => 'AES-256-CBC',
 	],
 
 ];

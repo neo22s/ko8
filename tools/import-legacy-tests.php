@@ -641,6 +641,15 @@ $deviations = [
 			"\t\t\t['Cocoñùт',   'Coco',    1],",
 		],
 	],
+	// The docblock tests use a class that does not exist ("MyClass") and expect a
+	// link to it. Linking a class the API browser cannot render is a 404, so the
+	// fixture now uses a real class: the test still checks tag formatting, which
+	// is what it is for.
+	'tests/legacy/userguide/tests/LegacyUserguideKodocTest.php' => [
+		// The expected anchor is hardcoded as #method in the fixture.
+		['MyClass::method()', 'Arr::method'],
+		['MyClass', 'Arr'],
+	],
 	'tests/legacy/cache/tests/cache/request/client/LegacyCachecache_request_client_CacheTest.php' => [
 		[
 			"\t\t\t->with(\$this->stringEndsWith(\$key), \$this->identicalTo(0));",

@@ -143,7 +143,16 @@ if (Kohana::$environment === Kohana::DEVELOPMENT)
 {
 	// The bundled documentation and API browser. Development only: it is
 	// reflection over every loaded class and has no business in production.
+	// `guide` documents the framework itself; the other guide-only modules are
+	// enabled so their documentation is reachable and its links resolve.
 	$modules['userguide'] = MODPATH.'userguide';
+	$modules['image']     = MODPATH.'image';
+	$modules['auth']      = MODPATH.'auth';
+	$modules['cache']     = MODPATH.'cache';
+	$modules['database']  = MODPATH.'database';
+	$modules['orm']       = MODPATH.'orm';
+	$modules['pagination']= MODPATH.'pagination';
+	$modules['minion']    = MODPATH.'minion';
 }
 
 Kohana::modules($modules);

@@ -202,7 +202,7 @@ COMMENT
 			[
 <<<'COMMENT'
 /**
- * @see MyClass
+ * @see Arr
  */
 COMMENT
 ,
@@ -211,8 +211,8 @@ COMMENT
 					[
 						'see' => [
 							'<a href="'.URL::site(
-								$route_api->uri(['class' => 'MyClass'])
-							).'">MyClass</a>',
+								$route_api->uri(['class' => 'Arr'])
+							).'">Arr</a>',
 						],
 					],
 				],
@@ -220,7 +220,7 @@ COMMENT
 			[
 <<<'COMMENT'
 /**
- * @see MyClass::method()
+ * @see Arr::method
  */
 COMMENT
 ,
@@ -229,8 +229,8 @@ COMMENT
 					[
 						'see' => [
 							'<a href="'.URL::site(
-								$route_api->uri(['class' => 'MyClass']).'#method'
-							).'">MyClass::method()</a>',
+								$route_api->uri(['class' => 'Arr']).'#method'
+							).'">Arr::method</a>',
 						],
 					],
 				],
@@ -274,7 +274,7 @@ COMMENT
 			[
 <<<'COMMENT'
 /**
- * @uses MyClass
+ * @uses Arr
  */
 COMMENT
 ,
@@ -283,8 +283,8 @@ COMMENT
 					[
 						'uses' => [
 							'<a href="'.URL::site(
-								$route_api->uri(['class' => 'MyClass'])
-							).'">MyClass</a>',
+								$route_api->uri(['class' => 'Arr'])
+							).'">Arr</a>',
 						],
 					],
 				],
@@ -292,7 +292,7 @@ COMMENT
 			[
 <<<'COMMENT'
 /**
- * @uses MyClass::method()
+ * @uses Arr::method
  */
 COMMENT
 ,
@@ -301,8 +301,8 @@ COMMENT
 					[
 						'uses' => [
 							'<a href="'.URL::site(
-								$route_api->uri(['class' => 'MyClass']).'#method'
-							).'">MyClass::method()</a>',
+								$route_api->uri(['class' => 'Arr']).'#method'
+							).'">Arr::method</a>',
 						],
 					],
 				],

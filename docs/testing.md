@@ -74,6 +74,26 @@ Everything else — 1441 tests, 3030 assertions — runs as written.
 - 89 tests are skipped: they need Memcache, APC, WinCache, SQLite or network access.
 - `getMockForAbstractClass()` and mocking a class with a method named `method` are deprecated in PHPUnit 11 and will break in PHPUnit 12. That affects a handful of tests in `Request` and `Session`.
 
+## Documentation checks
+
+Two scripts guard the guide, and both run without a browser:
+
+```bash
+php tools/check-guide-links.php          # every Markdown link and docblock link
+php tools/crawl-docs.php https://koseven.test /index.php/guide
+```
+
+`check-guide-links.php` resolves links the way the guide does (relative to the
+module root, `api/Class` for the API browser) and fails on anything that points
+at a page that does not exist. `crawl-docs.php` renders the site and follows
+every `href`, which is the only way to catch a link that is relative to the
+wrong base.
+
+This matters because the guide is served from two different URLs: a page lives
+at `/guide/<module>/<page>` and a docblock lives at `/guide-api/<class>`. A link
+written as `guide-api/Foo` is correct in the first and broken in the second.
+`Kohana_Kodoc_Links` resolves every link to an absolute path for that reason.
+
 ## Coverage
 
 ```bash

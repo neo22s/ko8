@@ -44,12 +44,67 @@ class Kohana_Kodoc {
 			}
 		}
 
-		return HTML::anchor(Route::get('docs/api')->uri(['class' => $class]).$member, $link, NULL, NULL, TRUE);
+		// Link only classes that really exist. The API browser installs an
+		// autoloader that fabricates the missing ones (Kodoc_Missing), which is
+		// useful for rendering but produces dead links in documentation.
+		$url = Kodoc_Links::resolve('api/'.$class);
+
+		if ($url === FALSE)
+		{
+			return $link;
+		}
+
+		return '<a href="'.HTML::chars($url.$member).'">'.HTML::chars($link).'</a>';
 	}
 
 	public static function factory($class)
 	{
 		return new Kodoc_Class($class);
+	}
+
+	/**
+	 * Does this class actually exist, or did Kodoc_Missing invent it?
+	 *
+	 * The API browser registers an autoloader that fabricates unknown classes so
+	 * reflection never explodes. That makes `class_exists()` useless on its own:
+	 * every typo "exists". A fabricated class always extends Kodoc_Missing.
+	 *
+	 * @param   string  $class  class name
+	 * @return  boolean
+	 */
+	public static function class_exists($class)
+	{
+		if ( ! class_exists($class) AND ! interface_exists($class) AND ! trait_exists($class))
+		{
+			return FALSE;
+		}
+
+		return ! is_subclass_of($class, 'Kodoc_Missing') AND $class !== 'Kodoc_Missing';
+	}
+
+	/**
+	 * Link to a class page, or return the name when the class does not exist.
+	 *
+	 * Documentation links a lot of things: interfaces, parent classes, classes
+	 * from modules that are not enabled. A link to a class the API browser
+	 * cannot render is a dead end, so it stays as plain text.
+	 *
+	 * @param   string  $class  class, interface or trait name
+	 * @param   string  $text   link text, defaults to the class name
+	 * @return  string
+	 */
+	public static function class_link($class, $text = NULL)
+	{
+		$text = ($text === NULL) ? $class : $text;
+
+		$url = Kodoc_Links::resolve('api/'.$class);
+
+		if ($url === FALSE)
+		{
+			return HTML::chars($text);
+		}
+
+		return '<a href="'.HTML::chars($url).'">'.HTML::chars($text).'</a>';
 	}
 
 	/**
@@ -65,8 +120,6 @@ class Kohana_Kodoc {
 
 		$menu = [];
 
-		$route = Route::get('docs/api');
-
 		foreach ($classes as $class)
 		{
 			if (Kodoc::is_transparent($class, $classes))
@@ -78,7 +131,7 @@ class Kohana_Kodoc {
 			if ( ! Kodoc::show_class($class))
 				continue;
 
-			$link = HTML::anchor($route->uri(['class' => $class->class->name]), $class->class->name);
+			$link = Kodoc::class_link($class->class->name);
 
 			if (isset($class->tags['package']))
 			{
@@ -227,20 +280,22 @@ class Kohana_Kodoc {
 		}
 		elseif ($tag === 'throws')
 		{
-			$route = Route::get('docs/api');
-
 			if (preg_match('/^(\w+)\W(.*)$/D', $text, $matches))
 			{
-				return HTML::anchor(
-					$route->uri(['class' => $matches[1]]),
-					$matches[1]
-				).' '.$matches[2];
+				if ( ! Kodoc::class_exists($matches[1]))
+				{
+					return $matches[1].' '.$matches[2];
+				}
+
+				return Kodoc::class_link($matches[1]).' '.$matches[2];
 			}
 
-			return HTML::anchor(
-				$route->uri(['class' => $text]),
-				$text
-			);
+			if ( ! Kodoc::class_exists($text))
+			{
+				return $text;
+			}
+
+			return Kodoc::class_link($text);
 		}
 		elseif ($tag === 'see' OR $tag === 'uses')
 		{
