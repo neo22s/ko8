@@ -79,6 +79,12 @@ It looks for what actually stops an application:
 
 The scan is token based, so `$this->money_format()` and `function money_format()` are not confused with the removed built-in, and `$('.x').each(` inside a template string is not a call. That is the difference between a report you act on and one you ignore.
 
+It does **not** report `count()` on a possibly-null variable. That is a real PHP 8 `TypeError`, but it cannot be told apart from a correct `count($array)` without type information, and flagging every call buries the findings that matter. Grep for it instead:
+
+```bash
+grep -rnE 'count\(\s*\$' application/ | grep -v 'count(\$this'
+```
+
 ## 3. Replace the framework
 
 ```bash
@@ -235,6 +241,12 @@ PHP 8 turned this warning into an exception. Audit views that assume a variable 
 ```
 
 The usual culprit is a controller that leaves `$products = NULL` when a query returns nothing.
+
+The doctor does not flag these, because it cannot tell `count($array)` from `count($maybeNull)` without type information. Grep for them:
+
+```bash
+grep -rnE 'count\(\s*\$' application/ themes/ | head -40
+```
 
 ### 5.6 Declare your dynamic properties
 
