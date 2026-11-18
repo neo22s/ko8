@@ -35,3 +35,10 @@ Kohana::modules(Kohana::modules() + [
 	// Test fixtures: cache groups, trusted hosts...
 	'legacy-fixtures' => __DIR__.'/fixtures',
 ]);
+
+// The inherited tests assume a routable request.
+Route::set('default', '(<controller>(/<action>(/<id>)))')
+	->defaults([
+		'controller' => 'welcome',
+		'action'     => 'index',
+	]);

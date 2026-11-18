@@ -37,13 +37,13 @@ Kohana::init([
 
 Kohana::$environment = Kohana::TESTING;
 
-// The default route, so Request::factory() can match something. The inherited
-// suite assumes a routed request exists.
-Route::set('default', '(<controller>(/<action>(/<id>)))')
-	->defaults([
-		'controller' => 'welcome',
-		'action'     => 'index',
-	]);
+// Module init.php files read their own config while registering routes, so a
+// reader has to exist before Kohana::modules() is called.
+Kohana::$config->attach(new Config_File);
+
+// Routes are matched in the order they were defined, so the catch-all default
+// route must be registered *after* the modules that add their own routes
+// (userguide: /guide, /guide-api). Each bootstrap does that at the end.
 
 require __DIR__.'/AtInvocation.php';
 require __DIR__.'/TestCase.php';

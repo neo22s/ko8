@@ -35,6 +35,11 @@ class Kohana_Kodoc_Property extends Kodoc {
 	 */
 	public $default;
 
+	/**
+	 * @var  string  description of the property, from the docblock
+	 */
+	public $description;
+
 	public function __construct($class, $property, $default = NULL)
 	{
 		$property = new ReflectionProperty($class, $property);
@@ -66,18 +71,19 @@ class Kohana_Kodoc_Property extends Kodoc {
 		// Show the value of static properties
 		if ($property->isStatic())
 		{
-			// Force the property to be accessible
-			$property->setAccessible(TRUE);
+			// ReflectionProperty::setAccessible() is a no-op since PHP 8.1 and
+			// deprecated in 8.5; it is only needed on 8.0.
+			if (PHP_VERSION_ID < 80100)
+			{
+				$property->setAccessible(TRUE);
+			}
+
+			$value = $property->getValue();
 
 			// Don't debug the entire object, just say what kind of object it is
-			if (is_object($property->getValue($class)))
-			{
-				$this->value = '<pre>object '.get_class($property->getValue($class)).'()</pre>';
-			}
-			else
-			{
-				$this->value = Debug::vars($property->getValue($class));
-			}
+			$this->value = is_object($value)
+				? '<pre>object '.get_class($value).'()</pre>'
+				: Debug::vars($value);
 		}
 
 		// Store the defult property

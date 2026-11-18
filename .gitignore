@@ -21,3 +21,7 @@ npm-debug.log
 # Test artifacts
 /build/logs/
 .phpunit.cache/
+
+# SQLite database created by the cache tests ("memory" is a filename here,
+# not an in-memory DSN).
+/memory

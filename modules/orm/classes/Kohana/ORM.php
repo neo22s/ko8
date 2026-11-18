@@ -580,6 +580,42 @@ class Kohana_ORM extends Model implements serializable {
 	}
 
 	/**
+	 * PHP 8.1 deprecates the Serializable interface; these two methods are its
+	 * replacement and take precedence. `serialize()`/`unserialize()` stay so
+	 * payloads written by older applications can still be read.
+	 *
+	 * @return array
+	 */
+	public function __serialize(): array
+	{
+		$data = [];
+
+		foreach (['_primary_key_value', '_object', '_changed', '_loaded', '_saved', '_sorting', '_original_values'] as $var)
+		{
+			$data[$var] = $this->{$var};
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Restores an object serialized with __serialize().
+	 *
+	 * @param array $data
+	 * @return void
+	 */
+	public function __unserialize(array $data): void
+	{
+		// Initialize model
+		$this->_initialize();
+
+		foreach ($data as $name => $var)
+		{
+			$this->{$name} = $var;
+		}
+	}
+
+	/**
 	 * Check whether the model data has been modified.
 	 * If $field is specified, checks whether that field was modified.
 	 *
