@@ -16,6 +16,17 @@ define('KOHANA_START_MEMORY', memory_get_usage());
 
 error_reporting(E_ALL);
 
+// The test application is empty directories, and git does not store those. A
+// fresh clone would fail on "Directory APPPATH/cache must be writable" before a
+// single test ran, so they are created here.
+foreach (['cache', 'logs', 'classes', 'config', 'views'] AS $dir)
+{
+	if ( ! is_dir(APPPATH.$dir))
+	{
+		mkdir(APPPATH.$dir, 0777, TRUE);
+	}
+}
+
 require DOCROOT.'vendor/autoload.php';
 require SYSPATH.'classes/Kohana/Core'.EXT;
 require SYSPATH.'classes/Kohana'.EXT;

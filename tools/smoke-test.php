@@ -19,7 +19,14 @@ define('MODPATH', DOCROOT.'modules/');
 define('KOHANA_START_TIME', microtime(TRUE));
 define('KOHANA_START_MEMORY', memory_get_usage());
 
-require DOCROOT.'vendor/autoload.php';
+// Composer's autoloader is optional here: the framework has its own, and this
+// script is the one thing that has to run before (or without) a composer
+// install. Requiring a missing file turned the PHP 8.1 smoke job into a fatal.
+if (is_file(DOCROOT.'vendor/autoload.php'))
+{
+	require DOCROOT.'vendor/autoload.php';
+}
+
 require SYSPATH.'classes/Kohana/Core'.EXT;
 require SYSPATH.'classes/Kohana'.EXT;
 
