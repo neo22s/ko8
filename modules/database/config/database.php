@@ -47,7 +47,7 @@ return [
 			 */
 			'dsn'        => 'mysql:host=localhost;dbname=kohana',
 			'username'   => 'root',
-			'password'   => 'r00tdb',
+			'password'   => FALSE,
 			'persistent' => FALSE,
 		],
 		/**

@@ -9,7 +9,7 @@
     "hmvc",
     "framework"
   ],
-  "homepage": "https://ko8.dev/",
+  "homepage": "https://github.com/neo22s/ko8",
   "authors": [
     {
       "name": "ko8 contributors"
@@ -26,7 +26,8 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/ko8/ko8/issues"
+    "issues": "https://github.com/neo22s/ko8/issues",
+    "source": "https://github.com/neo22s/ko8"
   },
   "require": {
     "php": ">=8.1",
