@@ -47,13 +47,18 @@ final class Ko8_Doctor {
 	];
 
 	/**
-	 * Packages/classes whose signature change is a fatal error for subclasses.
+	 * Methods an application may override, and how many parameters the parent
+	 * has. An override with fewer is a fatal declaration error, and this is the
+	 * most common real-world break when moving to Koseven: URL::site() and
+	 * URL::base() gained $subdomain.
 	 *
-	 * @var array<string,int>  class => parameters required by the parent method
+	 * @var array<string,array<string,int>>  parent class => method => arity
 	 */
 	private const SIGNATURES = [
-		'URL'   => 4,   // URL::site() and URL::base() gained $subdomain
-		'Kohana_URL' => 4,
+		'URL'         => ['site' => 4, 'base' => 3],
+		'Kohana_URL'  => ['site' => 4, 'base' => 3],
+		'Request'     => ['factory' => 4],
+		'Kohana_Request' => ['factory' => 4],
 	];
 
 	/**
@@ -134,6 +139,7 @@ final class Ko8_Doctor {
 		$this->check_functions($path, $tokens);
 		$this->check_dynamic_properties($path, $tokens);
 		$this->check_cookie_salt($path, $tokens);
+		$this->check_signatures($path, $code);
 		$this->check_configuration($path);
 	}
 
@@ -163,12 +169,12 @@ final class Ko8_Doctor {
 			}
 
 			// It has to be a call: `name(`.
-			if ($this->next_meaningful($tokens, $i) !== '(')
+			if ($this->next_meaningful_token($tokens, $i) !== '(')
 			{
 				continue;
 			}
 
-			$previous = $this->previous_meaningful($tokens, $i);
+			$previous = $this->previous_meaningful_token($tokens, $i);
 
 			// `$this->money_format()` and `I18n::money_format()` are the
 			// application's own methods, and `function money_format()` is a
@@ -233,19 +239,37 @@ final class Ko8_Doctor {
 
 		$count = count($tokens);
 
-		for ($i = 0; $i + 3 < $count; $i++)
+		for ($i = 0; $i < $count; $i++)
 		{
-			if ( ! is_array($tokens[$i]) OR $tokens[$i][0] !== T_VARIABLE OR $tokens[$i][1] !== '$this')
+			$token = $tokens[$i];
+
+			if ( ! is_array($token) OR $token[0] !== T_VARIABLE OR $token[1] !== '$this')
 			{
 				continue;
 			}
 
-			if ($this->next_meaningful($tokens, $i) !== T_OBJECT_OPERATOR AND $this->next_meaningful($tokens, $i) !== T_NULLSAFE_OBJECT_OPERATOR)
+			$arrow = $this->next_meaningful_index($tokens, $i);
+
+			if ($arrow === NULL)
 			{
 				continue;
 			}
 
-			$name_token = $this->next_meaningful_token($tokens, $i);
+			$arrow_token = $tokens[$arrow];
+
+			if ( ! is_array($arrow_token) OR ($arrow_token[0] !== T_OBJECT_OPERATOR AND $arrow_token[0] !== T_NULLSAFE_OBJECT_OPERATOR))
+			{
+				continue;
+			}
+
+			$name_index = $this->next_meaningful_index($tokens, $arrow);
+
+			if ($name_index === NULL)
+			{
+				continue;
+			}
+
+			$name_token = $tokens[$name_index];
 
 			if ( ! is_array($name_token) OR $name_token[0] !== T_STRING)
 			{
@@ -253,7 +277,9 @@ final class Ko8_Doctor {
 			}
 
 			// Only assignments, not reads or calls.
-			if ($this->next_meaningful($tokens, $this->index_of($tokens, $name_token)) !== '=')
+			$equals_index = $this->next_meaningful_index($tokens, $name_index);
+
+			if ($equals_index === NULL OR $tokens[$equals_index] !== '=')
 			{
 				continue;
 			}
@@ -263,10 +289,47 @@ final class Ko8_Doctor {
 				continue;
 			}
 
-			$this->add($inherits ? 'hint' : 'risk', $path, $tokens[$i][2], 'dynamic-property',
+			$this->add($inherits ? 'hint' : 'risk', $path, $token[2], 'dynamic-property',
 				'$this->'.$name_token[1].' is created on the fly; PHP 8.2 deprecates that'
 				.($inherits ? ', unless a parent class declares it or defines __set().' : ' and ko8 treats it as an error in development.'),
 				'Declare it: protected $'.$name_token[1].';');
+		}
+	}
+
+	/**
+	 * Overrides of methods whose signature the framework changed.
+	 */
+	private function check_signatures(string $path, string $code): void
+	{
+		if ( ! preg_match('/class\s+\w+\s+extends\s+([\w\\\\]+)\s*(?:implements[^{]+)?{/', $code, $extends))
+		{
+			return;
+		}
+
+		$parent = $extends[1];
+
+		if ( ! isset(self::SIGNATURES[$parent]) AND ! isset(self::SIGNATURES[str_replace('\\', '_', ltrim($parent, '\\'))]))
+		{
+			return;
+		}
+
+		$methods = self::SIGNATURES[$parent] ?? self::SIGNATURES[str_replace('\\', '_', ltrim($parent, '\\'))];
+
+		foreach ($methods AS $method => $arity)
+		{
+			if ( ! preg_match('/function\s+'.$method.'\s*\(([^)]*)\)/', $code, $match))
+			{
+				continue;
+			}
+
+			$parameters = substr_count($match[1], '$');
+
+			if ($parameters < $arity)
+			{
+				$this->add('break', $path, 0, 'signature-'.$method,
+					$parent.'::'.$method.'() takes '.$arity.' parameters in Koseven, and this override takes '.$parameters.' — PHP 8 refuses to load the class.',
+					'Add the missing parameter(s), even if unused. See '.$parent.'::'.$method.'() in the API browser.');
+			}
 		}
 	}
 
@@ -286,26 +349,28 @@ final class Ko8_Doctor {
 				continue;
 			}
 
-			if ($this->next_meaningful($tokens, $i) !== T_DOUBLE_COLON)
+			$colon = $this->next_meaningful_index($tokens, $i);
+
+			if ($colon === NULL OR ! is_array($tokens[$colon]) OR $tokens[$colon][0] !== T_DOUBLE_COLON)
 			{
 				continue;
 			}
 
-			$property = $this->next_meaningful_token($tokens, $i);
+			$property_index = $this->next_meaningful_index($tokens, $colon);
 
-			if ( ! is_array($property) OR $property[1] !== '$salt')
+			if ($property_index === NULL OR ! is_array($tokens[$property_index]) OR $tokens[$property_index][1] !== '$salt')
 			{
 				continue;
 			}
 
-			$after = $this->index_of($tokens, $property);
+			$equals_index = $this->next_meaningful_index($tokens, $property_index);
 
-			if ($this->next_meaningful($tokens, $after) !== '=')
+			if ($equals_index === NULL OR $tokens[$equals_index] !== '=')
 			{
 				continue;
 			}
 
-			$value = $this->next_meaningful_token($tokens, $after);
+			$value = $this->next_meaningful_token($tokens, $equals_index);
 
 			$is_null = (is_array($value) AND $value[0] === T_STRING AND strcasecmp($value[1], 'NULL') === 0)
 				OR $value === "''"
@@ -332,42 +397,46 @@ final class Ko8_Doctor {
 			return;
 		}
 
-		$app = dirname($path, 2).'/config';
+		// bootstrap.php usually sits next to config/, but not always: openeshop
+		// keeps it in oc/kohana/application/ and the config in oc/config/. Walk
+		// up a few levels before deciding the file is missing.
+		$dir = dirname($path);
 
-		if ( ! is_dir($app))
+		for ($i = 0; $i < 4 AND $dir !== '/' AND $dir !== ''; $i++)
 		{
-			$app = dirname($path, 3).'/config';
+			if (is_file($dir.'/config/url.php'))
+			{
+				return;
+			}
+
+			$dir = dirname($dir);
 		}
 
-		if ( ! is_dir($app))
-		{
-			return;
-		}
-
-		if ( ! is_file($app.'/url.php'))
-		{
-			$this->add('risk', $path, 0, 'trusted-hosts',
-				'No config/url.php: Koseven rejects unknown host names in URL::base(), so every URL throws on a new domain.',
-				"// application/config/url.php\nreturn ['trusted_hosts' => ['example\\.com']];");
-		}
+		$this->add('risk', $path, 0, 'trusted-hosts',
+			'No config/url.php: Koseven rejects unknown host names in URL::base(), so every URL throws on a new domain.',
+			"// application/config/url.php\nreturn ['trusted_hosts' => ['example\\.com']];");
 	}
 
 	/**
-	 * Index of a token inside a token list, by identity.
+	 * Index of the next token that is not whitespace or a comment.
 	 *
 	 * @param list<array{0:int,1:string,2:int}|string> $tokens
 	 */
-	private function index_of(array $tokens, array $needle): int
+	private function next_meaningful_index(array $tokens, int $index): int|null
 	{
-		foreach ($tokens AS $index => $token)
+		$count = count($tokens);
+
+		for ($i = $index + 1; $i < $count; $i++)
 		{
-			if ($token === $needle)
+			if ($this->is_trivia($tokens[$i]))
 			{
-				return $index;
+				continue;
 			}
+
+			return $i;
 		}
 
-		return -1;
+		return NULL;
 	}
 
 	/**
@@ -378,31 +447,9 @@ final class Ko8_Doctor {
 	 */
 	private function next_meaningful_token(array $tokens, int $index): array|string|null
 	{
-		$count = count($tokens);
+		$next = $this->next_meaningful_index($tokens, $index);
 
-		for ($i = $index + 1; $i < $count; $i++)
-		{
-			$token = $tokens[$i];
-
-			if (is_array($token) AND in_array($token[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], TRUE))
-			{
-				continue;
-			}
-
-			return $token;
-		}
-
-		return NULL;
-	}
-
-	/**
-	 * The value of the next meaningful token, which for punctuation is itself.
-	 *
-	 * @param list<array{0:int,1:string,2:int}|string> $tokens
-	 */
-	private function next_meaningful(array $tokens, int $index): array|string|null
-	{
-		return $this->next_meaningful_token($tokens, $index);
+		return ($next === NULL) ? NULL : $tokens[$next];
 	}
 
 	/**
@@ -411,21 +458,30 @@ final class Ko8_Doctor {
 	 * @param list<array{0:int,1:string,2:int}|string> $tokens
 	 * @return array{0:int,1:string,2:int}|string|null
 	 */
-	private function previous_meaningful(array $tokens, int $index): array|string|null
+	private function previous_meaningful_token(array $tokens, int $index): array|string|null
 	{
 		for ($i = $index - 1; $i >= 0; $i--)
 		{
-			$token = $tokens[$i];
-
-			if (is_array($token) AND in_array($token[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], TRUE))
+			if ($this->is_trivia($tokens[$i]))
 			{
 				continue;
 			}
 
-			return $token;
+			return $tokens[$i];
 		}
 
 		return NULL;
+	}
+
+	/**
+	 * Whitespace, comments and docblocks carry no syntax.
+	 *
+	 * @param array{0:int,1:string,2:int}|string $token
+	 */
+	private function is_trivia(array|string $token): bool
+	{
+		return is_array($token)
+			AND ($token[0] === T_WHITESPACE OR $token[0] === T_COMMENT OR $token[0] === T_DOC_COMMENT);
 	}
 
 	/**
