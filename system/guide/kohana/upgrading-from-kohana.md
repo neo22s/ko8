@@ -94,6 +94,8 @@ Old data still decrypts: `RIJNDAEL_128` + `MCRYPT_MODE_NOFB` is `AES-128-OFB`, a
 
 **`count()` on `null`.** It is a `TypeError` now, not a warning. `if ($products AND count($products))`.
 
+**Implicit nullable parameters.** `array $x = NULL` is deprecated in PHP 8.4; write `?array $x = NULL`. The doctor lists every one with the exact signature.
+
 **Dynamic properties.** Undeclared `$this->foo = …` is deprecated in 8.2. Declare the property, define `__set()`, or add `#[\AllowDynamicProperties]` to the class.
 
 **`Cookie::$salt`** and **`application/config/url.php`** with `trusted_hosts`. Koseven requires both, and the doctor reports them.

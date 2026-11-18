@@ -74,6 +74,8 @@ It looks for what actually stops an application:
 |---|---|
 | `function-*` | `each()`, `money_format()`, `create_function()`, `ereg*()`, `mysql_*()`, `mcrypt_*()` no longer exist |
 | `dynamic-property` | An undeclared `$this->foo = …` is deprecated in PHP 8.2 |
+| `implicit-nullable` | `array $x = NULL` is deprecated in PHP 8.4; write `?array $x = NULL` |
+| `signature-*` | An override with fewer parameters than the parent is a fatal declaration error |
 | `cookie-salt` | `Cookie::$salt = NULL` makes every `Cookie::set()` throw |
 | `trusted-hosts` | Koseven rejects unknown hosts in `URL::base()` without `config/url.php` |
 
@@ -248,7 +250,23 @@ The doctor does not flag these, because it cannot tell `count($array)` from `cou
 grep -rnE 'count\(\s*\$' application/ themes/ | head -40
 ```
 
-### 5.6 Declare your dynamic properties
+### 5.6 Implicit nullable parameters
+
+`array $x = NULL` relies on a nullable PHP only infers. It is deprecated in 8.4
+and emits a notice on every call:
+
+```php
+// before
+public function find(Model_Order $order, array $options = NULL)
+
+// after
+public function find(Model_Order $order, ?array $options = NULL)
+```
+
+The doctor reports each one with the exact signature to write. It is mechanical
+and safe: the type was already nullable, this just says so.
+
+### 5.7 Declare your dynamic properties
 
 Undeclared `$this->foo = …` is deprecated in PHP 8.2. Declare the property, add `__set()`, or opt the class out:
 
@@ -259,7 +277,7 @@ class Widget { /* … */ }
 
 The doctor reports these, and it knows the difference between a class that inherits from something (where the parent may declare or intercept the property) and one that does not.
 
-### 5.7 `Kohana_Exception::response()` may run before `$log` exists
+### 5.8 `Kohana_Exception::response()` may run before `$log` exists
 
 If an error happens during bootstrap, `Kohana::$log` is still `NULL` and the error page dies with a second, unrelated fatal that hides the first one:
 
@@ -271,7 +289,7 @@ if (Kohana::$log)
 }
 ```
 
-### 5.8 Declare your trusted hosts
+### 5.9 Declare your trusted hosts
 
 Koseven rejects unknown hostnames in `URL::base()`:
 
@@ -285,7 +303,7 @@ return [
 ];
 ```
 
-### 5.9 Optional: `short_open_tag`
+### 5.10 Optional: `short_open_tag`
 
 ko8's own views use full `<?php` tags. If your views use `<?`, either enable `short_open_tag` or convert them. Grep first:
 
@@ -301,6 +319,7 @@ grep -rl '<?[^p=x]' application/views | wc -l
 - [ ] `encrypt` module enabled, `MCRYPT_*` constants replaced
 - [ ] `URL::site()` / `URL::base()` overrides updated
 - [ ] `count()` on possibly-null variables guarded
+- [ ] Implicit nullable parameters made explicit (`?array $x = NULL`)
 - [ ] Dynamic properties declared or `#[\AllowDynamicProperties]`
 - [ ] `$magic_quotes` shim added or removed
 - [ ] `Cookie::$salt` set

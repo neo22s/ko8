@@ -200,6 +200,36 @@ PHP);
 		$this->assertSame([], $this->rules($report, 'break'));
 	}
 
+	/**
+	 * PHP 8.4 deprecates `array $x = NULL`; `?array $x = NULL` is the fix. The
+	 * last parameter is the one a naive splitter drops, so it is the one to test.
+	 */
+	public function test_an_implicit_nullable_on_the_last_parameter_is_reported(): void
+	{
+		$report = $this->run_doctor(<<<'PHP'
+<?php
+class Service
+{
+	public function find(Model_Order $order, array $options = NULL) {}
+}
+PHP);
+
+		$this->assertContains('implicit-nullable', $this->rules($report, 'risk'));
+	}
+
+	public function test_an_explicit_nullable_is_not_reported(): void
+	{
+		$report = $this->run_doctor(<<<'PHP'
+<?php
+class Service
+{
+	public function find(Model_Order $order, ?array $options = NULL) {}
+}
+PHP);
+
+		$this->assertNotContains('implicit-nullable', $this->rules($report, 'risk'));
+	}
+
 	public function test_a_null_cookie_salt_is_reported(): void
 	{
 		$report = $this->run_doctor('<?php Cookie::$salt = NULL;');

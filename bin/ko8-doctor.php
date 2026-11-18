@@ -139,8 +139,229 @@ final class Ko8_Doctor {
 		$this->check_functions($path, $tokens);
 		$this->check_dynamic_properties($path, $tokens);
 		$this->check_cookie_salt($path, $tokens);
+		$this->check_nullable_parameters($path, $tokens);
 		$this->check_signatures($path, $code);
 		$this->check_configuration($path);
+	}
+
+	/**
+	 * Parameters typed without `?` but defaulting to NULL.
+	 *
+	 *     function f(array $data = NULL)     deprecated in PHP 8.4
+	 *     function f(?array $data = NULL)    correct
+	 *
+	 * PHP still accepts the first form and treats it as nullable, so the code
+	 * runs; what changed is that it now emits a deprecation on every call. This
+	 * is the same fix Rector applied to 90 parameters in the framework.
+	 *
+	 * @param list<array{0:int,1:string,2:int}|string> $tokens
+	 */
+	private function check_nullable_parameters(string $path, array $tokens): void
+	{
+		$count = count($tokens);
+
+		for ($i = 0; $i < $count; $i++)
+		{
+			if ( ! is_array($tokens[$i]) OR $tokens[$i][0] !== T_FUNCTION)
+			{
+				continue;
+			}
+
+			$open = $this->next_meaningful_index($tokens, $i);
+
+			// Skip the function name: `function name(`.
+			if ($open !== NULL AND is_array($tokens[$open]) AND $tokens[$open][0] === T_STRING)
+			{
+				$open = $this->next_meaningful_index($tokens, $open);
+			}
+
+			if ($open === NULL OR $tokens[$open] !== '(')
+			{
+				continue;
+			}
+
+			$close = $this->matching_paren($tokens, $open);
+
+			if ($close === NULL)
+			{
+				continue;
+			}
+
+			foreach ($this->parameter_segments($tokens, $open, $close) AS [$start, $end])
+			{
+				$this->check_parameter($path, $tokens, $start, $end);
+			}
+		}
+	}
+
+	/**
+	 * One parameter between two comma boundaries.
+	 *
+	 * @param list<array{0:int,1:string,2:int}|string> $tokens
+	 */
+	private function check_parameter(string $path, array $tokens, int $start, int $end): void
+	{
+		$type = '';
+		$name = '';
+		$nullable = FALSE;
+		$line = NULL;
+
+		for ($i = $start; $i <= $end; $i++)
+		{
+			$token = $tokens[$i];
+
+			if ($this->is_trivia($token))
+			{
+				continue;
+			}
+
+			if ($token === '?')
+			{
+				$nullable = TRUE;
+
+				continue;
+			}
+
+			if (is_array($token) AND $token[0] === T_VARIABLE)
+			{
+				$name = $token[1];
+				$line = $token[2];
+
+				break;
+			}
+
+			// Anything before the variable and after the visibility modifier is
+			// the type: `array`, `\Foo`, `int|string`, `self`.
+			if (is_array($token) AND in_array($token[0], [
+				T_STRING,
+				T_ARRAY,
+				T_CALLABLE,
+				T_NAME_QUALIFIED,
+				T_NAME_FULLY_QUALIFIED,
+				T_NAME_RELATIVE,
+			], TRUE))
+			{
+				$type .= $token[1];
+			}
+			elseif (in_array($token, ['|', '\\'], TRUE))
+			{
+				$type .= $token;
+			}
+		}
+
+		if ($line === NULL OR $type === '' OR $nullable)
+		{
+			return;
+		}
+
+		// The default has to be NULL, and nothing else.
+		$equals = NULL;
+
+		for ($i = $start; $i <= $end; $i++)
+		{
+			if ($tokens[$i] === '=')
+			{
+				$equals = $i;
+				break;
+			}
+		}
+
+		if ($equals === NULL)
+		{
+			return;
+		}
+
+		$value = $this->next_meaningful_token($tokens, $equals);
+
+		$default_null = is_array($value) AND $value[0] === T_STRING AND strcasecmp($value[1], 'NULL') === 0;
+
+		if ( ! $default_null)
+		{
+			return;
+		}
+
+		$this->add('risk', $path, $line, 'implicit-nullable',
+			'`'.$type.' '.$name.' = NULL` relies on an implicit nullable, deprecated in PHP 8.4.',
+			'Write `?'.$type.' '.$name.' = NULL`.');
+	}
+
+	/**
+	 * Index of the parenthesis that closes the one at $open.
+	 *
+	 * @param list<array{0:int,1:string,2:int}|string> $tokens
+	 */
+	private function matching_paren(array $tokens, int $open): int|null
+	{
+		$depth = 0;
+		$count = count($tokens);
+
+		for ($i = $open; $i < $count; $i++)
+		{
+			$token = $tokens[$i];
+
+			if ($token === '(')
+			{
+				$depth++;
+			}
+			elseif ($token === ')')
+			{
+				$depth--;
+
+				if ($depth === 0)
+				{
+					return $i;
+				}
+			}
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Split a parameter list into [start, end] index pairs.
+	 *
+	 * @param list<array{0:int,1:string,2:int}|string> $tokens
+	 * @return list<array{0:int,1:int}>
+	 */
+	private function parameter_segments(array $tokens, int $open, int $close): array
+	{
+		$segments = [];
+		$start = $open + 1;
+		$depth = 0;
+
+		// Stop before the closing parenthesis: it belongs to the list, not to
+		// the last parameter. Counting it would push $depth to -1 and silently
+		// drop that parameter.
+		for ($i = $open + 1; $i < $close; $i++)
+		{
+			$token = $tokens[$i];
+
+			if ($token === '(' OR $token === '[' OR $token === '{')
+			{
+				$depth++;
+			}
+			elseif ($token === ')' OR $token === ']' OR $token === '}')
+			{
+				$depth--;
+			}
+
+			if ($depth === 0 AND $token === ',')
+			{
+				if ($i > $start)
+				{
+					$segments[] = [$start, $i - 1];
+				}
+
+				$start = $i + 1;
+			}
+		}
+
+		if ($close > $start)
+		{
+			$segments[] = [$start, $close - 1];
+		}
+
+		return $segments;
 	}
 
 	/**
@@ -544,6 +765,10 @@ final class Ko8_Doctor {
 			{
 				continue;
 			}
+
+			usort($this->findings[$severity], static function (array $a, array $b): int {
+				return [$a['file'], $a['line']] <=> [$b['file'], $b['line']];
+			});
 
 			printf("%s (%d)\n", $label, count($this->findings[$severity]));
 
