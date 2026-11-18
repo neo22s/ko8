@@ -76,10 +76,18 @@ define('SYSPATH', realpath($system).DIRECTORY_SEPARATOR);
 // Clean up the configuration vars
 unset($application, $modules, $system);
 
-if (file_exists('install'.EXT))
+/**
+ * `install.php` is a standalone environment checker, not an installer. It is
+ * served when you open it directly; every other request goes to the app.
+ *
+ * (Kohana used to hijack *every* request while the file existed, which is
+ * confusing when the file is only a diagnostic.)
+ */
+if (PHP_SAPI !== 'cli' AND basename($_SERVER['SCRIPT_FILENAME'] ?? '') === 'install'.EXT)
 {
-	// Load the installation check
-	return include 'install'.EXT;
+	require __DIR__.'/install'.EXT;
+
+	return;
 }
 
 /**

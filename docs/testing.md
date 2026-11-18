@@ -58,6 +58,14 @@ A handful of inherited assertions describe things that stopped being true before
 - `EncryptTest` is not imported at all: its vectors describe `mcrypt`, removed in PHP 7.2. `src/Kohana/Encrypt/Engine/Mcrypt.php` is not shipped.
 - `__toString()` cannot be mocked in PHPUnit 11, so `ResponseTest` uses `KO8_TestCase::stringable()`.
 
+## The API browser is a test
+
+`tests/unit/ApiBrowserTest.php` renders real `/guide-api/<class>` pages through
+the request stack. It exists because that page is reflection over every loaded
+class: it is the cheapest way to find a dynamic property, a bad return type or a
+deprecated call anywhere in the framework. A class that renders in the browser
+is a class that compiles cleanly on PHP 8.5.
+
 Everything else — 1441 tests, 3030 assertions — runs as written.
 
 ## Known gaps
