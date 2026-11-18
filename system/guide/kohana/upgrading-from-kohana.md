@@ -52,7 +52,7 @@ Summary: 1 will break, 0 probably break, 0 to check.
 
 Exit codes are `0` clean, `1` something will break, `2` only warnings. It understands the difference between `$this->money_format()` (your method) and `money_format()` (the built-in that PHP 8 removed), so the report is short enough to act on.
 
-The full guide, with every fix spelled out, is [docs/migration.md](https://github.com/ko8/ko8/blob/main/docs/migration.md).
+Every fix it suggests is expanded below. `docs/migration.md` in the repository has the same content in one flat page, for reading offline.
 
 ### 2. Replace the framework
 
@@ -88,7 +88,7 @@ $encrypt = new Encrypt([
 ]);
 ```
 
-Old data still decrypts: `RIJNDAEL_128` + `MCRYPT_MODE_NOFB` is `AES-128-OFB`, and the payload is `base64(iv . ciphertext)`. See [docs/migration.md](https://github.com/ko8/ko8/blob/main/docs/migration.md#52-mcrypt-is-gone) for the shim.
+Old data still decrypts: `RIJNDAEL_128` + `MCRYPT_MODE_NOFB` is `AES-128-OFB`, and the payload is `base64(iv . ciphertext)`. The repository's `docs/migration.md` has the shim, ready to paste.
 
 **`URL::site()` overrides.** Keep the fourth parameter. This is the most common fatal in a real application.
 

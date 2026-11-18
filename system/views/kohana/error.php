@@ -184,7 +184,7 @@ $is_http = ($class instanceof HTTP_Exception);
 
 	<p class="mt-8 text-center font-mono text-xs text-slate-600">
 		ko8 <?php echo Kohana::VERSION ?> (<?php echo Kohana::CODENAME ?>)
-		· <a class="text-slate-500 underline underline-offset-2 hover:text-ko8-300" href="https://ko8.dev/guide/errors">documentation</a>
+		· <span>guide/kohana/errors</span>
 	</p>
 
 </main>

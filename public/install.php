@@ -165,7 +165,7 @@ $optional = [
 			<li><span class="font-mono text-xs text-slate-500">1.</span> Set <code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-300">Cookie::$salt</code> in <code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-300">application/bootstrap.php</code>.</li>
 			<li><span class="font-mono text-xs text-slate-500">2.</span> Add your hosts to <code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-300">application/config/url.php</code>.</li>
 			<li><span class="font-mono text-xs text-slate-500">3.</span> Point your web server document root at <code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-300">public/</code>.</li>
-			<li><span class="font-mono text-xs text-slate-500">4.</span> Read <a class="text-ko8-300 underline underline-offset-2 hover:text-ko8-100" href="https://ko8.dev/guide/install">the installation guide</a>.</li>
+			<li><span class="font-mono text-xs text-slate-500">4.</span> Enable the userguide module in development and read <code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-300">/guide/kohana/install</code>.</li>
 		</ol>
 	</div>
 

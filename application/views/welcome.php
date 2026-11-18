@@ -66,10 +66,12 @@ $checks = [
 		<li><span class="font-mono text-xs text-slate-600">4.</span> Delete <code class="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-200">public/install.php</code>.</li>
 	</ol>
 
+	<?php if (Kohana::find_file('views', 'userguide/index')): ?>
 	<p class="mt-10 flex flex-wrap gap-2">
-		<a class="rounded-lg bg-ko8-600 px-3.5 py-2 text-sm font-semibold text-white no-underline hover:bg-ko8-500" href="https://ko8.dev/guide">Read the docs</a>
-		<a class="rounded-lg border border-slate-700 px-3.5 py-2 text-sm font-semibold text-slate-300 no-underline hover:border-slate-500 hover:text-white" href="https://ko8.dev/guide/migration">Migrate from Koseven</a>
+		<a class="rounded-lg bg-ko8-600 px-3.5 py-2 text-sm font-semibold text-white no-underline hover:bg-ko8-500" href="<?php echo URL::site('guide') ?>">Read the docs</a>
+		<a class="rounded-lg border border-slate-700 px-3.5 py-2 text-sm font-semibold text-slate-300 no-underline hover:border-slate-500 hover:text-white" href="<?php echo URL::site('guide/kohana/upgrading-from-kohana') ?>">Migrating to ko8</a>
 	</p>
+	<?php endif ?>
 
 </main>
 
