@@ -50,7 +50,7 @@ class LegacyCorekohana_DateTest extends KO8_TestCase
 	 */
 	public static function provider_offset(){
 		return [
-			[30600, 'Asia/Calcutta', 'America/Argentina/Buenos_Aires'],
+			[30600, 'Asia/Kolkata', 'America/Argentina/Buenos_Aires'],
 		];
 	}
 
@@ -248,9 +248,9 @@ class LegacyCorekohana_DateTest extends KO8_TestCase
 			// Binary date!
 			['01/01/2010 01:00', '1AM 1st January 2010', 'd/m/Y H:i'],
 			// Timezones (see #3902)
-			['2011-04-01 01:23:45 Antarctica/South_Pole', '2011-04-01 01:23:45', 'Y-m-d H:i:s e', 'Antarctica/South_Pole'],
-			['2011-04-01 01:23:45 Antarctica/South_Pole', '2011-03-31 14:23:45 Europe/Paris', 'Y-m-d H:i:s e', 'Antarctica/South_Pole'],
-			['2011-04-01 01:23:45 Antarctica/South_Pole', '@1301574225', 'Y-m-d H:i:s e', 'Antarctica/South_Pole'],
+			['2011-04-01 01:23:45 Antarctica/McMurdo', '2011-04-01 01:23:45', 'Y-m-d H:i:s e', 'Antarctica/McMurdo'],
+			['2011-04-01 01:23:45 Antarctica/McMurdo', '2011-03-31 14:23:45 Europe/Paris', 'Y-m-d H:i:s e', 'Antarctica/McMurdo'],
+			['2011-04-01 01:23:45 Antarctica/McMurdo', '@1301574225', 'Y-m-d H:i:s e', 'Antarctica/McMurdo'],
 		];
 	}
 

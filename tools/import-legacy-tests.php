@@ -674,6 +674,14 @@ $deviations = [
 			"'Kohana_Exception [ 0 ]: foobar ~ '.Debug::path(__FILE__).' [ '.__LINE__.' ]'",
 		],
 	],
+	// The date tests use tzdata alias names from 2011. They resolve on macOS and
+	// on Debian's full tzdata, but not on a minimal Ubuntu image, where
+	// DateTimeZone throws "Unknown or bad timezone". The canonical names are the
+	// same zones, so the expected offsets do not change.
+	'tests/legacy/core/tests/kohana/LegacyCorekohana_DateTest.php' => [
+		["'Asia/Calcutta'", "'Asia/Kolkata'"],
+		['Antarctica/South_Pole', 'Antarctica/McMurdo'],
+	],
 ];
 
 foreach ($deviations AS $file => $replacements)
