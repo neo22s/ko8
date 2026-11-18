@@ -3,7 +3,7 @@
 ko8 ships two PHPUnit 11 suites.
 
 ```bash
-composer test          # the ko8 suite: tests/unit      (~12 tests)
+composer test          # the ko8 suite: tests/unit      (40 tests)
 composer test:legacy   # the inherited Kohana/Koseven suite (~1440 tests)
 composer test:all      # both
 ```
@@ -57,6 +57,26 @@ A handful of inherited assertions describe things that stopped being true before
 - The `unittest` module no longer exists, so the "modules contains unittest" assertion now checks an enabled module.
 - `EncryptTest` is not imported at all: its vectors describe `mcrypt`, removed in PHP 7.2. `src/Kohana/Encrypt/Engine/Mcrypt.php` is not shipped.
 - `__toString()` cannot be mocked in PHPUnit 11, so `ResponseTest` uses `KO8_TestCase::stringable()`.
+
+## The doctor is tested
+
+`bin/ko8-doctor.php` is a script, so it is tested as a process:
+`tests/unit/DoctorTest.php` writes a fixture, runs the binary and reads its
+`--json` report. It covers exactly the cases that a regex gets wrong, which is
+the reason the scan is token based:
+
+| Fixture | Expected |
+|---|---|
+| `each($data)` | reported |
+| `I18n::money_format()` | not reported |
+| `function money_format()` | not reported |
+| `"$('.x').each("` inside a string | not reported |
+| `$this->title = …` with no declaration | reported |
+| the same, with `protected $title;` or `__set()` | not reported |
+| `URL::site()` override with 3 parameters | reported |
+| the same with `$subdomain` | not reported |
+
+It also asserts the exit codes, since that is the interface a CI job uses.
 
 ## The API browser is a test
 
