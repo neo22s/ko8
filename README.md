@@ -3,7 +3,8 @@
 **The Koseven / Kohana 3.3 API on modern PHP.** Lightweight HMVC, cascading filesystem, zero magic. No DI container, no annotations, no 40-package dependency tree.
 
 ```bash
-composer create-project ko8/ko8 myapp
+git clone --branch v8.0.0 --depth 1 https://github.com/neo22s/ko8.git myapp
+cd myapp && composer install
 ```
 
 Requires PHP 8.1+. Runs on 8.1, 8.2, 8.3, 8.4 and 8.5.
@@ -125,14 +126,15 @@ The scan is token based, so `$this->money_format()` (your method) is not confuse
 with `money_format()` (the built-in PHP 8 removed), and `$('.x').each(` inside a
 template string is not a call.
 
-Then:
+Then download the release and copy the framework over:
 
 ```bash
-composer require ko8/ko8:^8.0 --with-all-dependencies
+git clone --branch v8.0.0 --depth 1 https://github.com/neo22s/ko8.git ko8
+cp -R ko8/system .
+cp -R ko8/modules .
 ```
 
-`ko8/ko8` declares `replace: kohana/core 3.3.*` and `koseven/koseven 3.3.*`, so
-packages that depend on either are satisfied. Keep `application/` untouched.
+Keep `application/` untouched. That is the point.
 
 The full guide, with every fix spelled out, is [docs/migration.md](docs/migration.md),
 and the same content is served by the framework itself at
@@ -199,7 +201,7 @@ assets/         Tailwind source
 
 ## Quick start
 
-1. `composer install`
+1. `composer install` (optional; only the test suite needs it)
 2. Point your web server at `public/`
 3. Open `/install.php` and fix whatever it reports
 4. Set `Cookie::$salt` in `application/bootstrap.php`

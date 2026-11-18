@@ -43,7 +43,7 @@ $compat = defined('Kohana::KOSEVEN_COMPAT') ? Kohana::KOSEVEN_COMPAT : Kohana::V
 |---|---|---|
 | PHP | 7.0+ | **8.1+** |
 | mbstring | recommended | **required** |
-| Composer | optional | required |
+| Composer | optional | optional |
 | `mcrypt` | optional | **removed** |
 | `mysql` | removed | **removed** |
 
@@ -52,7 +52,7 @@ $compat = defined('Kohana::KOSEVEN_COMPAT') ? Kohana::KOSEVEN_COMPAT : Kohana::V
 `bin/ko8-doctor.php` reads your application without executing it and tells you what will break, with the file, the line and the fix:
 
 ```bash
-php vendor/ko8/ko8/bin/ko8-doctor.php application
+php ko8/bin/ko8-doctor.php application
 ```
 
 ```
@@ -89,34 +89,17 @@ grep -rnE 'count\(\s*\$' application/ | grep -v 'count(\$this'
 
 ## 3. Replace the framework
 
-```bash
-composer require ko8/ko8:^8.0 --with-all-dependencies
-```
-
-`ko8/ko8` declares `replace: kohana/core 3.3.*` and `koseven/koseven 3.3.*`. A package that requires `koseven/koseven:3.3.9` is satisfied by ko8 and will not be installed alongside it.
-
-**One caveat, because `replace` is not magic.** Composer honours the constraint you asked for, not the one you meant:
+Download the release and copy `system/` and `modules/` over the old ones. The application folder does not move:
 
 ```bash
-composer require ko8/ko8:^8.0
-#   koseven/koseven 3.3.9 is replaced — fine
-
-composer require koseven/koseven:^3.3
-#   asks for the real package by name; Composer installs it
-```
-
-If a dependency pins `koseven/koseven` exactly (`"koseven/koseven": "3.3.9"`), the replace still wins. If it requires a version ko8 does not claim, Composer will refuse and tell you so — that is the correct behaviour, and the fix is to widen the constraint there.
-
-If you vendor the framework by hand (the classic `system/` + `modules/` layout):
-
-```bash
+git clone --branch v8.0.0 --depth 1 https://github.com/neo22s/ko8.git ko8
 mv system system.old
 mv modules modules.old
-cp -R vendor/ko8/ko8/system .
-cp -R vendor/ko8/ko8/modules .
+cp -R ko8/system .
+cp -R ko8/modules .
 ```
 
-Keep `application/` untouched. That is the point.
+Keep `application/` untouched. That is the point. If you prefer a tarball, the same files are in the [v8.0.0 release](https://github.com/neo22s/ko8/releases/tag/v8.0.0).
 
 ## 4. What ko8 fixes for you
 
@@ -315,7 +298,7 @@ grep -rl '<?[^p=x]' application/views | wc -l
 
 - [ ] PHP 8.1+ everywhere, including CLI and cron
 - [ ] `php bin/ko8-doctor.php application` reports 0 will break
-- [ ] `composer require ko8/ko8`
+- [ ] ko8's `system/` and `modules/` copied over the old ones
 - [ ] `encrypt` module enabled, `MCRYPT_*` constants replaced
 - [ ] `URL::site()` / `URL::base()` overrides updated
 - [ ] `count()` on possibly-null variables guarded

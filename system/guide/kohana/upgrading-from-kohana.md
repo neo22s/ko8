@@ -56,11 +56,15 @@ Every fix it suggests is expanded below. `docs/migration.md` in the repository h
 
 ### 2. Replace the framework
 
+Download the release and copy `system/` and `modules/` over the old ones:
+
 ```bash
-composer require ko8/ko8:^8.0 --with-all-dependencies
+git clone --branch v8.0.0 --depth 1 https://github.com/neo22s/ko8.git ko8
+cp -R ko8/system .
+cp -R ko8/modules .
 ```
 
-`ko8/ko8` replaces `kohana/core 3.3.*` and `koseven/koseven 3.3.*`, so packages that depend on either are satisfied. Keep `application/` untouched.
+The application folder does not move. That is the point.
 
 ### 3. What ko8 already fixed
 
