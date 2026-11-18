@@ -512,7 +512,12 @@ class Kohana_Route {
 		if ($params)
 		{
 			// @issue #4079 rawurlencode parameters
-			$params = array_map('rawurlencode', $params);
+			// PHP 8.1: rawurlencode(NULL) is deprecated, and a route parameter
+			// can legitimately be NULL (e.g. the "class" of the API index page).
+			$params = array_map(
+				static fn ($value) => $value === NULL ? '' : rawurlencode((string) $value),
+				$params
+			);
 			// decode slashes back, see Apache docs about AllowEncodedSlashes and AcceptPathInfo
 			$params = str_replace(['%2F', '%5C'], ['/', '\\'], $params);
 		}

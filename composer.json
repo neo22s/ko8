@@ -2,12 +2,28 @@
   "name": "ko8/ko8",
   "description": "ko8 - the Koseven/Kohana 3.3 API on modern PHP. Lightweight HMVC, zero magic.",
   "license": "BSD-3-Clause",
-  "keywords": ["kohana", "koseven", "ko8", "hmvc", "framework"],
+  "keywords": [
+    "kohana",
+    "koseven",
+    "ko8",
+    "hmvc",
+    "framework"
+  ],
   "homepage": "https://ko8.dev/",
   "authors": [
-    { "name": "ko8 contributors" },
-    { "name": "Koseven Team", "homepage": "https://koseven.dev/", "role": "developer" },
-    { "name": "Kohana Team", "homepage": "http://kohanaframework.org/team", "role": "developer" }
+    {
+      "name": "ko8 contributors"
+    },
+    {
+      "name": "Koseven Team",
+      "homepage": "https://koseven.dev/",
+      "role": "developer"
+    },
+    {
+      "name": "Kohana Team",
+      "homepage": "http://kohanaframework.org/team",
+      "role": "developer"
+    }
   ],
   "support": {
     "issues": "https://github.com/ko8/ko8/issues"
@@ -21,7 +37,9 @@
     "rector/rector": "^2.8"
   },
   "autoload": {
-    "psr-4": { "Ko8\\": "system/src/Ko8/" }
+    "psr-4": {
+      "Ko8\\": "system/src/Ko8/"
+    }
   },
   "replace": {
     "kohana/core": "3.3.*",
@@ -34,6 +52,11 @@
   "scripts": {
     "test": "phpunit",
     "rector": "rector process --dry-run",
-    "lint": "find system modules -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null"
+    "lint": "find system modules -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null",
+    "test:legacy": "phpunit -c phpunit.legacy.xml",
+    "test:all": [
+      "@test",
+      "@test:legacy"
+    ]
   }
 }

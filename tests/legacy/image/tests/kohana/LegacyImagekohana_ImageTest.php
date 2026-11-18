@@ -1,0 +1,33 @@
+<?php
+/**
+ * @package    Kohana/Image
+ * @category   Test
+ * @author     Kohana Team
+ * @copyright  (c) Kohana Team
+ * @license    https://koseven.ga/LICENSE.md
+ */
+class LegacyImagekohana_ImageTest extends KO8_TestCase {
+
+	public function setUp(): void {
+		parent::setUp();
+
+		if ( ! extension_loaded('gd'))
+		{
+			$this->markTestSkipped('The GD extension is not available.');
+		}
+	}
+
+	/**
+	 * Tests the Image::save() method for files that don't have extensions
+	 *
+	 * @return  void
+	 */
+	public function test_save_without_extension()
+	{
+		$image = Image::factory(MODPATH.'image/tests/test_data/test_image');
+		$this->assertTrue($image->save(Kohana::$cache_dir.'/test_image'));
+
+		unlink(Kohana::$cache_dir.'/test_image');
+	}
+
+}

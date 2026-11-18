@@ -546,7 +546,8 @@ class Kohana_Validation implements ArrayAccess {
 					}
 
 					// Check if a label for this parameter exists
-					if (isset($this->_labels[$value]))
+					// (PHP 8.1 deprecates NULL as an array offset).
+					if ($value !== NULL AND isset($this->_labels[$value]))
 					{
 						// Use the label as the value, eg: related field name for "matches"
 						$value = $this->_labels[$value];

@@ -63,6 +63,9 @@ class Kohana_Date {
 			$now = date(DateTime::RFC2822, $now);
 		}
 
+		// A NULL $now means "right now"; DateTime() rejects NULL in PHP 8.1.
+		$now = ($now === NULL) ? 'now' : (string) $now;
+
 		// Create timezone objects
 		$zone_remote = new DateTimeZone($remote);
 		$zone_local  = new DateTimeZone($local);

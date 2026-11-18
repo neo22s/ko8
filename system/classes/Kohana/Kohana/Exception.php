@@ -48,6 +48,11 @@ class Kohana_Kohana_Exception extends Exception {
      */
     public function __construct($message = "", ?array $variables = NULL, $code = 0, ?Exception $previous = NULL)
     {
+        // A NULL message is legal all the way down from HTTP_Exception::factory()
+        // (a redirect carries no message), but Exception::__construct() rejects
+        // NULL since PHP 8.1.
+        $message = (string) $message;
+
         // Set the message
         $message = __($message, $variables);
 

@@ -103,7 +103,7 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 		$page = $this->request->param('page');
 
 		// Trim trailing slash
-		$page = rtrim($page, '/');
+		$page = rtrim((string) $page, '/');
 
 		// If no module provided in the url, show the user guide index page, which lists the modules.
 		if ( ! $module)
@@ -111,6 +111,17 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 			return $this->index();
 		}
 		
+		// A module that is not documented may still be a page of the core guide.
+		// `/guide/install` is the URL people remember, so send it to
+		// `/guide/kohana/install` instead of showing a 404.
+		if ( ! Kohana::$config->load('userguide.modules.'.$module.'.enabled')
+			AND $this->file('kohana/'.$module))
+		{
+			return $this->redirect(
+				Route::get('docs/guide')->uri(['module' => 'kohana', 'page' => $module])
+			);
+		}
+
 		// If this module's userguide pages are disabled, show the error page
 		if ( ! Kohana::$config->load('userguide.modules.'.$module.'.enabled'))
 		{
@@ -183,6 +194,7 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 
 		// Get the class from the request
 		$class = $this->request->param('class');
+
 
 		// If no class was passed to the url, display the API index page
 		if ( ! $class)
@@ -269,29 +281,9 @@ abstract class Kohana_Controller_Userguide extends Controller_Template {
 	{
 		if ($this->auto_render)
 		{
-			// Get the media route
-			$media = Route::get('docs/media');
-
-			// Add styles
-			$this->template->styles = [
-				$media->uri(['file' => 'css/print.css'])  => 'print',
-				$media->uri(['file' => 'css/screen.css']) => 'screen',
-				$media->uri(['file' => 'css/kodoc.css'])  => 'screen',
-				$media->uri(['file' => 'css/shCore.css']) => 'screen',
-				$media->uri(['file' => 'css/shThemeKodoc.css']) => 'screen',
-			];
-
-			// Add scripts
-			$this->template->scripts = [
-				$media->uri(['file' => 'js/jquery.min.js']),
-				$media->uri(['file' => 'js/jquery.cookie.js']),
-				$media->uri(['file' => 'js/kodoc.js']),
-				// Syntax Highlighter
-				$media->uri(['file' => 'js/shCore.js']),
-				$media->uri(['file' => 'js/shBrushPhp.js']),
-			];
-
-			// Add languages
+			// The template links the compiled stylesheet directly. There is no
+			// jQuery, no syntax highlighter and no Disqus any more: the docs are
+			// plain HTML and the browser does the rest.
 			$this->template->translations = Kohana::message('userguide', 'translations');
 		}
 

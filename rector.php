@@ -21,8 +21,8 @@ return RectorConfig::configure()
         __DIR__.'/modules',
     ])
     ->withSkip([
-        __DIR__.'/modules/userguide',
-        __DIR__.'/modules/codebench',
+        // The unittest module is superseded by tests/ (PHPUnit 11). It is kept
+        // only so old installations do not break on a missing file.
         __DIR__.'/modules/unittest',
     ])
     ->withRules([

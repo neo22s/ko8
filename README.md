@@ -59,10 +59,22 @@ Wrong answer first: renaming classes to `Ko8_*` would break every app for no fun
 ## Tests
 
 ```bash
-composer test
+composer test          # ko8 suite
+composer test:legacy   # the inherited Kohana/Koseven suite (1441 tests)
 ```
 
-The suite has no in-app runner, no web UI and no module bootstrap. `tests/bootstrap.php` is 30 lines.
+The suite has no in-app runner and no module bootstrap. `tests/bootstrap.php` is 50 lines. See [docs/testing.md](docs/testing.md).
+
+## Documentation
+
+Every module keeps its Markdown under `guide/`. With the `userguide` module enabled in development:
+
+- `/guide` — index of documented modules
+- `/guide/kohana/install` — installation guide
+- `/guide/kohana/upgrading-from-kohana` — what changed and why
+- `/guide-api` — reflection-based API browser
+
+`/guide/install` redirects to the core guide page, because that is the URL people remember.
 
 ## Assets
 

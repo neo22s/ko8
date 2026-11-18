@@ -382,7 +382,13 @@ class Kohana_HTTP_Cache {
 			else
 			{
 				$hit_count = $this->_cache->get(HTTP_Cache::CACHE_HIT_KEY.$key);
-				$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$key, ++$hit_count);
+
+				// PHP 8: incrementing a non-numeric value is a TypeError, and a
+				// cache backend is free to return NULL (or anything else) for a
+				// missing key.
+				$hit_count = is_numeric($hit_count) ? ((int) $hit_count + 1) : 1;
+
+				$this->_cache->set(HTTP_Cache::CACHE_HIT_KEY.$key, $hit_count);
 			}
 
 			// Update the header to have correct HIT status and count

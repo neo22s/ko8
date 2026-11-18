@@ -20,15 +20,11 @@ require DOCROOT.'vendor/autoload.php';
 require SYSPATH.'classes/Kohana/Core'.EXT;
 require SYSPATH.'classes/Kohana'.EXT;
 
-// Kohana::init() translates its own errors through __(), which normally comes
-// from I18n. In CLI there is no I18n yet, so provide a minimal version.
-if ( ! function_exists('__'))
-{
-	function __($string, ?array $values = NULL, $lang = NULL)
-	{
-		return empty($values) ? $string : strtr($string, $values);
-	}
-}
+// Kohana::init() translates its own errors through __(), which lives at the
+// bottom of the I18n class file. Loading I18n now is what the real request
+// path does too; defining our own __() would silently shadow it and make every
+// translation test fail.
+require SYSPATH.'classes/Kohana/I18n'.EXT;
 
 spl_autoload_register(['Kohana', 'auto_load']);
 
@@ -41,4 +37,13 @@ Kohana::init([
 
 Kohana::$environment = Kohana::TESTING;
 
+// The default route, so Request::factory() can match something. The inherited
+// suite assumes a routed request exists.
+Route::set('default', '(<controller>(/<action>(/<id>)))')
+	->defaults([
+		'controller' => 'welcome',
+		'action'     => 'index',
+	]);
+
+require __DIR__.'/AtInvocation.php';
 require __DIR__.'/TestCase.php';

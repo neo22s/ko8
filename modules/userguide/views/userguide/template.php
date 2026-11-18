@@ -11,7 +11,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo HTML::chars($title) ?> · ko8 docs</title>
-<link rel="stylesheet" href="<?php echo Route::get('docs/media')->uri(['file' => 'css/ko8']) ?>">
+<link rel="stylesheet" href="<?php echo URL::site(Route::get('docs/media')->uri(['file' => 'css/ko8.css'])) ?>">
 </head>
 <body class="min-h-full bg-white text-slate-700 antialiased">
 

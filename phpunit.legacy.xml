@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
+         bootstrap="tests/legacy-bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache/legacy"
+         beStrictAboutOutputDuringTests="false"
+         failOnWarning="false"
+         failOnDeprecation="false"
+         failOnNotice="false"
+         displayDetailsOnTestsThatTriggerDeprecations="false">
+    <testsuites>
+        <testsuite name="legacy">
+            <directory suffix="Test.php">tests/legacy</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <ini name="memory_limit" value="512M"/>
+    </php>
+</phpunit>

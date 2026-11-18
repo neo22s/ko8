@@ -286,7 +286,7 @@ class Kohana_Valid {
 		// Converting to an integer may pass PHP_INT_MAX and result in an error!
 		$number = (string) $number;
 
-		if ( ! ctype_digit($number))
+		if ( ! ctype_digit((string) $number))
 		{
 			// Luhn can only be used on numbers!
 			return FALSE;
@@ -366,7 +366,7 @@ class Kohana_Valid {
 		}
 		else
 		{
-			return ctype_alpha($str);
+			return ctype_alpha((string) $str);
 		}
 	}
 
@@ -385,7 +385,7 @@ class Kohana_Valid {
 		}
 		else
 		{
-			return ctype_alnum($str);
+			return ctype_alnum((string) $str);
 		}
 	}
 
@@ -425,7 +425,7 @@ class Kohana_Valid {
 		}
 		else
 		{
-			return (is_int($str) AND $str >= 0) OR ctype_digit($str);
+			return (is_int($str) AND $str >= 0) OR ctype_digit((string) $str);
 		}
 	}
 

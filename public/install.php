@@ -2,7 +2,7 @@
 /**
  * ko8 environment checker.
  *
- * Standalone on purpose: it must run before the framework is configured and
+ * Standalone on purpose: it has to run before the framework is configured and
  * without any dependency on Composer, sessions or the request stack.
  *
  * Open /install.php once, fix what it reports, then delete it.
