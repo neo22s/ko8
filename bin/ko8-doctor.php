@@ -273,7 +273,11 @@ final class Ko8_Doctor {
 
 		$value = $this->next_meaningful_token($tokens, $equals);
 
-		$default_null = is_array($value) AND $value[0] === T_STRING AND strcasecmp($value[1], 'NULL') === 0;
+		// `AND` binds looser than `=`: `$x = a() AND b()` assigns only a().
+		// Use `&&` here, or the check silently reports every typed parameter.
+		$default_null = is_array($value)
+			&& $value[0] === T_STRING
+			&& strcasecmp($value[1], 'NULL') === 0;
 
 		if ( ! $default_null)
 		{

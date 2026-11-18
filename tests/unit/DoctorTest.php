@@ -247,6 +247,25 @@ PHP);
 	/**
 	 * Exit codes are the interface for a CI job.
 	 */
+	/**
+	 * A non-NULL default is not an implicit nullable. This case also guards a
+	 * real bug: `$x = is_array($v) AND ...` assigns the result of is_array()
+	 * and evaluates the rest of the condition afterwards, so the check matched
+	 * every typed parameter until it used `&&`.
+	 */
+	public function test_a_non_null_default_is_not_reported(): void
+	{
+		$report = $this->run_doctor(<<<'PHP'
+<?php
+class URL extends Kohana_URL
+{
+	public static function slugify($text, $separator = '-', array $modifier = array()) {}
+}
+PHP);
+
+		$this->assertNotContains('implicit-nullable', $this->rules($report, 'risk'));
+	}
+
 	public function test_exit_code_reflects_the_worst_finding(): void
 	{
 		$script = escapeshellarg(PHP_BINARY).' '
