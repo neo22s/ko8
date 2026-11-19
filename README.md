@@ -36,11 +36,11 @@ What you get if you take it:
 Kohana was a good framework with a bad ending. It was small, it had a real
 cascading filesystem, and it did not pretend that a web app needed an
 application container to render a form. Then PHP moved on, the maintainers moved
-on, and on 1 July 2017 Kohana was declared dead.
+on, and in 2014 Kohana announced its final releases.
 
-Koseven picked it up for the PHP 7 era and kept it alive for eight years. It was
-archived in April 2026. For anyone still running a Kohana or Koseven application,
-that leaves the same problem Koseven solved in 2016, one PHP version later: the
+Koseven picked it up for the PHP 7 era and kept it alive until it was archived
+in April 2026. For anyone still running a Kohana or Koseven application, that
+leaves the same problem Koseven solved in 2017, a few PHP versions later: the
 code works, the server does not.
 
 There are two honest options. Rewrite the application, which for a ten-year-old
@@ -145,8 +145,7 @@ and the same content is served by the framework itself at
 Not on a hello-world. On [open eShop](https://github.com/open-classifieds/open-eshop),
 a classifieds and e-commerce platform that started life on Kohana 3.3 and has
 been in production since 2013. It is the reason Koseven existed in the first
-place: the author of this repository was on the original Kohana team, and built
-Koseven to keep it running.
+place: I built Koseven to keep it running.
 
 The migration was: copy `system/` and `modules/`, run the doctor, fix one
 `money_format()` call and one implicit nullable.
