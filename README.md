@@ -143,7 +143,7 @@ and the same content is served by the framework itself at
 ## Tested on a real application
 
 Not on a hello-world. On [open eShop](https://github.com/open-classifieds/open-eshop),
-a classifieds and e-commerce platform that started life on Kohana 3.3 and has
+an online store platform that started life on Kohana 3.3 and has
 been in production since 2013. It is the reason Koseven existed in the first
 place: I built Koseven to keep it running.
 

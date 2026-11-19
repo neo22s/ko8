@@ -45,7 +45,7 @@ about.
 
 ![The ko8 welcome page](screenshots/01-welcome.png)
 
-I tested it on Open eShop, which is the only test I trust. A classifieds
+I tested it on Open eShop, which is the only test I trust. An online store
 platform from 2013. Copy the framework, run the doctor, fix one `money_format()`
 call and one implicit nullable. That is it. Home, listing, product, search,
 login, contact, RSS, panel: all 200, no deprecations, empty error log, on PHP
