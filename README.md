@@ -253,5 +253,6 @@ better ending than a dead repository.
 
 ## Licence
 
-BSD-3-Clause, inherited from Kohana (2007–2017 Kohana Team) and Koseven
-(2016 Koseven Team). See [LICENSE.md](LICENSE.md).
+BSD-3-Clause. See [LICENSE](LICENSE). The inherited Kohana (2007–2017 Kohana
+Team) and Koseven (2016 Koseven Team) notices are preserved verbatim in
+[LICENSE.legacy.md](LICENSE.legacy.md).
